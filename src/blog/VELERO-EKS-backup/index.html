@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velero Backup on Amazon EKS - Blog</title>
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: black;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 2em;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.5em;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #58a6ff;
+            border-bottom: 2px solid #1f6feb;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            color: #79c0ff;
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            color: #a5d6ff;
+        }
+        
+        /* Links */
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+        
+        /* Code Blocks */
+        pre, code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+        
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            line-height: 1.45;
+        }
+        
+        code {
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+            color: #e6edf3;
+        }
+        
+        pre code {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        
+        /* Inline code */
+        :not(pre) > code {
+            color: #ff7b72; /* Red for inline code */
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+        
+        li {
+            margin: 0.5em 0;
+        }
+        
+        li strong {
+            color: #ffa657;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #30363d;
+            margin: 1.5em 0;
+            padding: 0 1em;
+            color: #8b949e;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #161b22;
+            color: #ffffff;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(22, 27, 34, 0.5);
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2em 0;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            border: none;
+        }
+        
+        .toc ul {
+            columns: 2;
+            column-gap: 40px;
+        }
+        
+        .toc li {
+            break-inside: avoid;
+        }
+        
+        /* Header info */
+        .blog-meta {
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #238636;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin: 2em 0;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: #2ea043;
+            text-decoration: none;
+        }
+        
+        /* Note boxes */
+        .note {
+            border-left: 4px solid #58a6ff;
+            margin: 1.5em 0;
+            padding: 0 1em;
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+        }
+        
+        .note strong {
+            color: #58a6ff;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .toc ul {
+                columns: 1;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../../index.html">Home</a> | <a href="../../blog.html">Blogs</a>
+        </nav>
+    </header>
+
+    <main>
+        <article>
+            <h1>Velero Backup on Amazon EKS with Pod Identity</h1>
+            
+            <div class="blog-meta">
+                <time datetime="2025-11-09">Apr 10, 2024</time>
+            </div>
+            
+            <div class="toc">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#why-velero">Why Velero?</a></li>
+                    <li><a href="#architecture">Architecture Overview</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#step1">Step 1: Create S3 Backup Bucket</a></li>
+                    <li><a href="#step2">Step 2: Create IAM Role and Policy</a></li>
+                    <li><a href="#step3">Step 3: Deploy Velero via Helm</a></li>
+                    <li><a href="#step4">Step 4: Velero Helm Values</a></li>
+                    <li><a href="#step5">Step 5: Verify Backup</a></li>
+                    <li><a href="#step6">Step 6: Restore from Backup</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                </ul>
+            </div>
+            
+            <p>Data protection is a critical part of Kubernetes operations. In Amazon EKS, Velero is a popular open-source tool that provides backup and restore, disaster recovery, and migration capabilities for Kubernetes clusters. This blog will walk through how to set up Velero backups on Amazon EKS using Pod Identity, eliminating the need for long-lived credentials.</p>
+
+            <h2 id="introduction">Introduction</h2>
+            <p>Data protection is a critical part of Kubernetes operations. In Amazon EKS, Velero is a popular open-source tool that provides backup and restore, disaster recovery, and migration capabilities for Kubernetes clusters. This blog will walk through how to set up Velero backups on Amazon EKS using Pod Identity, eliminating the need for long-lived credentials.</p>
+
+            <h2 id="why-velero">Why Velero?</h2>
+            <p>Velero provides:</p>
+            <ul>
+                <li><strong>Backup and restore</strong> of Kubernetes objects and persistent volumes.</li>
+                <li><strong>Disaster recovery</strong> for your workloads.</li>
+                <li><strong>Migration</strong> between clusters and even across cloud providers.</li>
+            </ul>
+            <p>In AWS, Velero integrates seamlessly with Amazon S3 for backup storage and IAM roles for secure access.</p>
+
+            <h2 id="architecture">Architecture Overview</h2>
+            <ul>
+                <li>Velero Server Pod runs in the velero namespace.</li>
+                <li>Amazon S3 bucket stores the backup data.</li>
+                <li>EKS Pod Identity assigns an IAM role to Velero's ServiceAccount.</li>
+                <li>IAM Policy grants Velero permissions to read and write to the S3 bucket.</li>
+            </ul>
+            <div class="note">
+                <strong>Note:</strong> For multi-account scenarios, replicate CUR data from the Payer Account to the Data Collection Account using S3 replication rules.
+            </div>
+
+            <h2 id="prerequisites">Prerequisites</h2>
+            <p>Before diving in, ensure you have:</p>
+            <ul>
+                <li><strong>EKS Cluster:</strong> An EKS cluster (1.24+ recommended).</li>
+                <li><strong>AWS CLI:</strong> AWS CLI configured.</li>
+                <li><strong>kubectl:</strong> kubectl installed and pointing to your EKS cluster.</li>
+                <li><strong>Helm:</strong> Helm installed.</li>
+                <li><strong>Terraform:</strong> Terraform installed (for infrastructure setup).</li>
+            </ul>
+
+            <h2 id="step1">Step 1: Create an S3 Backup Bucket</h2>
+            <p>We'll use Terraform to create the bucket and configure versioning:</p>
+            <pre><code class="language-hcl">module "backup_eks" {
+  source = "../modules/terraform-aws-s3-module"
+  bucket        = "test-ue1-agf-d-s3-backup-bucket"
+  force_destroy = true
+  versioning = {
+    enabled = true
+  }
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+  tags = {
+    Environment = "prod"
+    Project     = "test"
+  }
+}</code></pre>
+            <p>This bucket will store all Velero backups.</p>
+
+            <h2 id="step2">Step 2: Create IAM Role and Policy for Velero</h2>
+            <p>Velero needs S3 access. With Pod Identity, we bind a Kubernetes ServiceAccount to an IAM role.</p>
+            <pre><code class="language-hcl">resource "aws_iam_policy" "velero_identity_policy" {
+  name        = "test-ue1-agf-d-policy-velero"
+  description = "IAM policy for Velero Pod to access S3"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket",
+          "s3:PutObject",
+          "s3:DeleteObject",
+        ]
+        Resource = [
+          "arn:aws:s3:::${module.backup_eks.s3_bucket_id}",
+          "arn:aws:s3:::${module.backup_eks.s3_bucket_id}/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "velero_identity_role" {
+  name               = "test-ue1-agf-d-role-velero"
+  assume_role_policy = data.aws_iam_policy_document.this.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach_velero_policy" {
+  policy_arn = aws_iam_policy.velero_identity_policy.arn
+  role       = aws_iam_role.velero_identity_role.name
+}</code></pre>
+            <p>The assume role policy should allow Pod Identity service to assume the role:</p>
+            <pre><code class="language-json">{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "pods.eks.amazonaws.com"
+      },
+      "Action": ["sts:TagSession", "sts:AssumeRole"]
+    }
+  ]
+}</code></pre>
+
+            <h2 id="step3">Step 3: Deploy Velero via Helm</h2>
+            <p>We'll use the official Helm chart:</p>
+            <pre><code class="language-bash">helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+helm repo update</code></pre>
+            <p>Then deploy with:</p>
+            <pre><code class="language-bash">helm upgrade --install test-velero vmware-tanzu/velero \
+  --version 10.1.2 \
+  -f values.yaml \
+  --namespace velero --create-namespace</code></pre>
+
+            <h2 id="step4">Step 4: Velero Helm Values (values.yaml)</h2>
+            <p>Here's our production-ready configuration:</p>
+            <pre><code class="language-yaml">fullnameOverride: test-prod-velero
+
+image:
+  repository: velero/velero
+  tag: v1.15.2
+  pullPolicy: IfNotPresent
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /metrics
+    port: http-monitoring
+    scheme: HTTP
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  httpGet:
+    path: /metrics
+    port: http-monitoring
+    scheme: HTTP
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+# AWS plugin
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+# Backup storage location
+configuration:
+  backupStorageLocation:
+  - name: test-prod-velero-backup-storage
+    provider: aws
+    bucket: test-ue1-agf-d-s3-backup-bucket
+    accessMode: ReadWrite
+    config:
+     region: us-east-1
+  volumeSnapshotLocation: []
+
+# Service account (bound via Pod Identity)
+serviceAccount:
+  server:
+    create: true
+    name: test-prod-velero-serviceaccount
+
+# No static creds
+credentials:
+  useSecret: false
+
+# Scheduled backups
+schedules:
+  mybackup:
+    disabled: false
+    labels:
+      owner: prashansa.joshi
+      application: velero
+      environment: prod
+      project: test
+    schedule: "0 0 * * *"   # Daily at midnight
+    useOwnerReferencesInBackup: false
+    paused: false
+    skipImmediately: false
+    template:
+      ttl: "168h"            # Keep backups for 7 days
+      storageLocation: test-prod-velero-backup-storage
+      includedNamespaces:
+      - prod</code></pre>
+            
+            <div class="note">
+                <strong>Key Highlights:</strong><br>
+                • Pod Identity is used (credentials.useSecret=false + ServiceAccount binding)<br>
+                • S3 bucket stores all backups<br>
+                • Daily backup schedule (0 0 * * *)<br>
+                • Retention policy (ttl: 168h = 7 days)<br>
+                • Namespace filtering (only prod namespace)
+            </div>
+
+            <h2 id="step5">Step 5: Verify Backup</h2>
+            <p>Check that Velero is running:</p>
+            <pre><code class="language-bash">kubectl get pods -n velero</code></pre>
+            <p>Trigger a manual backup:</p>
+            <pre><code class="language-bash">velero backup create test-manual-backup --include-namespaces test</code></pre>
+            <p>Check backup status:</p>
+            <pre><code class="language-bash">velero backup get</code></pre>
+            <p>Verify in S3:</p>
+            <pre><code class="language-bash">aws s3 ls s3://test-ue1-agf-d-s3-backup-bucket/backups/</code></pre>
+
+            <h2 id="step6">Step 6: Restore from Backup</h2>
+            <p>To restore from a backup:</p>
+            <pre><code class="language-bash">velero restore create --from-backup test-manual-backup</code></pre>
+            <p>Monitor restore status:</p>
+            <pre><code class="language-bash">velero restore get</code></pre>
+
+            <h2 id="best-practices">Best Practices and Troubleshooting</h2>
+            <ul>
+                <li><strong>Secure the S3 Bucket:</strong> Enable bucket encryption and restrict public access.</li>
+                <li><strong>Least Privilege:</strong> Limit the IAM policy to only necessary permissions.</li>
+                <li><strong>Monitor Backups:</strong> Use Velero's Prometheus metrics (/metrics) for monitoring.</li>
+                <li><strong>Test Restores:</strong> Periodically test restores to ensure backups are valid.</li>
+                <li><strong>Version Control:</strong> Store values.yaml and Terraform files in a Git repository.</li>
+            </ul>
+
+            <h3 id="troubleshooting">Troubleshooting</h3>
+            <ul>
+                <li><strong>Pod Identity Issues:</strong> Verify the Pod Identity association using <code>aws eks describe-pod-identity-association</code>.</li>
+                <li><strong>S3 Access Errors:</strong> Check IAM role permissions and bucket policies.</li>
+                <li><strong>Backup Failures:</strong> Use <code>velero backup describe &lt;backup-name&gt;</code> for detailed logs.</li>
+            </ul>
+
+            <h2 id="conclusion">Conclusion</h2>
+            <p>With Velero and EKS Pod Identity, you can securely back up your Kubernetes cluster without managing AWS credentials manually. This setup provides:</p>
+            <ul>
+                <li>Automated backups.</li>
+                <li>Secure IAM integration via Pod Identity.</li>
+                <li>Disaster recovery capabilities for your workloads.</li>
+            </ul>
+            <p>Velero makes backup and restore operations simple, portable, and secure in Kubernetes environments.</p>
+        </article>
+    </main>
+
+    <footer>
+        <a href="../../blog.html" class="back-button">← Back to blogs</a>
+    </footer>
+
+    <!-- Prism.js Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+</body>
+</html>

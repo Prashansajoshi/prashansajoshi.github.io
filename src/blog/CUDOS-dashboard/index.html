@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUDOS Dashboard - Blog</title>
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: black;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 2em;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.5em;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            color: #58a6ff;
+            border-bottom: 2px solid #1f6feb;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            color: #79c0ff;
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            color: #a5d6ff;
+        }
+        
+        /* Links */
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+        
+        /* Code Blocks */
+        pre, code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+        
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            line-height: 1.45;
+        }
+        
+        code {
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+            color: #e6edf3;
+        }
+        
+        pre code {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+        
+        /* Inline code */
+        :not(pre) > code {
+            color: #ff7b72; /* Red for inline code */
+        }
+        
+        /* Lists */
+        ul, ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+        
+        li {
+            margin: 0.5em 0;
+        }
+        
+        li strong {
+            color: #ffa657;
+        }
+        
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+        
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #30363d;
+            margin: 1.5em 0;
+            padding: 0 1em;
+            color: #8b949e;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+        
+        th, td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #161b22;
+            color: #ffffff;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(22, 27, 34, 0.5);
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2em 0;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            border: none;
+        }
+        
+        .toc ul {
+            columns: 2;
+            column-gap: 40px;
+        }
+        
+        .toc li {
+            break-inside: avoid;
+        }
+        
+        /* Header info */
+        .blog-meta {
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #238636;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            margin: 2em 0;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: #2ea043;
+            text-decoration: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .toc ul {
+                columns: 1;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="../../index.html">Home</a> | <a href="../../blog.html">Blogs</a>
+        </nav>
+    </header>
+
+    <main>
+        <article>
+            <h1>CUDOS Dashboard</h1>
+            
+            <div class="blog-meta">
+                <time datetime="2025-11-09">Nov 9, 2025</time>
+            </div>
+            
+            <div class="toc">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#introduction">Introduction to CUDOS</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#architecture">Architecture Overview</a></li>
+                    <li><a href="#deployment">Deployment Workflow</a></li>
+                    <li><a href="#validate">Validate Deployment</a></li>
+                    <li><a href="#services">Services Under the Hood</a></li>
+                    <li><a href="#tags">Adding User-Defined Tags</a></li>
+                    <li><a href="#exploring">Exploring the CUDOS Dashboard</a></li>
+                    <li><a href="#best-practices">Best Practices and Troubleshooting</a></li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                </ul>
+            </div>
+            
+            <p>In today's cloud landscape, managing AWS costs is key to efficiency and cutting waste. The CUDOS Dashboard (Cost and Usage Dashboard Operations Solution) is an open-source tool in AWS Cloud Intelligence Dashboards. It uses AWS Cost and Usage Reports (CUR) to offer detailed insights, recommendations, and visuals to optimize costs. This blog guides you through deploying CUDOS, its architecture, core services, and customizing it with user-defined tags, based on practical use and official AWS resources.</p>
+
+            <h2 id="introduction">Introduction to CUDOS</h2>
+            <p>CUDOS transforms raw CUR data into actionable intelligence using services like AWS Glue for data integration, Athena for querying, and QuickSight for visualizations. It offers high-level overviews alongside deep dives into usage patterns, supporting multi-account setups in AWS Organizations. Key benefits include ML-driven recommendations for rightsizing, reservations, and AWS Marketplace spend analysis.</p>
+            <p>The CUR provides comprehensive metadata on services, pricing, Reserved Instances, and Savings Plans, making it the foundation for CUDOS. AWS Glue prepares this data, Athena analyzes it, and QuickSight delivers interactive dashboards.</p>
+
+            <h2 id="prerequisites">Prerequisites</h2>
+            <p>Before diving in, ensure you have:</p>
+            <ul>
+                <li><strong>Permissions:</strong> Admin access in your Management/Payer Account for CloudFormation, CUR, Athena, Glue, IAM, Lambda, QuickSight, and S3. All roles and policies are managed via templates.</li>
+                <li><strong>AWS Setup:</strong> Enable CUR with Athena integration. For multi-payer environments, prepare a Data Collection Account.</li>
+                <li><strong>Tools:</strong> Terraform for deployment (optional but recommended for automation), or use CloudFormation directly.</li>
+                <li><strong>Time Considerations:</strong> CUR reports take up to 24 hours to generate; dashboard data appears shortly after.</li>
+            </ul>
+            <p>No costs beyond standard AWS usage apply. QuickSight's SPICE engine efficiently handles queries.</p>
+
+            <h2 id="architecture">Architecture Overview</h2>
+            <p>CUDOS architecture centers on CUR data flowing through a serverless pipeline:</p>
+            <ul>
+                <li>CUR reports are delivered to an S3 bucket.</li>
+                <li>Glue crawlers index the data, creating tables in the Glue Data Catalog.</li>
+                <li>Athena runs predefined queries to generate views.</li>
+                <li>QuickSight datasets pull from these views for dashboard.</li>
+            </ul>
+            <img src="images/1.png" alt="Architecture of the CUDOS dashboard implementation">
+            <div class="image-caption">fig: Architecture of the CUDOS dashboard implementation</div>
+            <p>For multi-account scenarios, replicate CUR data from the Payer Account to the Data Collection Account using S3 replication rules.</p>
+
+            <h2 id="deployment">Deployment Workflow</h2>
+            <p>Deployment is streamlined via Terraform wrappers around CloudFormation, ensuring reproducibility.</p>
+            
+            <h3>Step 1: Set Up CUR in the Payer Account</h3>
+            <p>Create an S3 bucket and CUR report:</p>
+            <pre><code class="language-hcl">module "cur_payer" {
+  source = "../../modules/cur-source"
+}</code></pre>
+            <p>This provisions the bucket with necessary permissions for multi-payer support.</p>
+
+            <h3>Step 2: Deploy CUDOS in the Data Collection Account</h3>
+            <p>Use the CID module:</p>
+            <pre><code class="language-hcl">module "cid_dashboard" {
+  source          = "../../modules/cudos-dashboard"
+  stack_name      = "CUDOS-STACK"
+  template_bucket = "your-template-bucket" # Must exist
+  stack_parameters = {
+    "PrerequisitesQuickSight"            = "yes"
+    "PrerequisitesQuickSightPermissions" = "yes"
+    "QuickSightUser"                     = "your-quicksight-user"
+    "DeployCUDOSv5"                      = "yes"
+    "DeployCostIntelligenceDashboard"    = "no"
+    "DeployKPIDashboard"                 = "no"
+    "CURBucketPath"                      = "s3://your-cur-bucket/path"
+  }
+}</code></pre>
+            <p>This deploys Glue crawlers, Athena views, Lambda functions, and QuickSight dashboards. Wait 24 hours for initial data population. Schedules for crawlers and datasets ensure regular updates.</p>
+            <p>Post-deployment, access QuickSight, select the "CUDOS Dashboard v5," and explore visualizations. Avoid paginated reports to control costs.</p>
+
+            <h2 id="validate">Validate Deployment</h2>
+            <pre><code class="language-bash"># Check outputs
+terraform output
+
+# In QuickSight
+- Search: "CUDOS Dashboard v5"
+- Open → Verify data in visuals
+
+# In Athena
+SELECT bill_payer_account_id, line_item_usage_account_id, sum(line_item_unblended_cost) as cost
+FROM summary_view
+GROUP BY 1, 2
+LIMIT 10;</code></pre>
+            <img src="images/2.png" alt="CUDOS Dashboard">
+            <div class="image-caption">fig: CUDOS Dashboard (Executive Summary View)</div>
+
+            <h2 id="services">Services Under the Hood</h2>
+            <p>CUDOS orchestrates several AWS services seamlessly. Here's a walkthrough:</p>
+
+            <h3>AWS QuickSight</h3>
+            <p>Dashboards: Access "CUDOS Dashboard v5" for visuals.</p>
+            <p>Datasets: Sourced from Athena views; scheduled refreshes ensure freshness. Manually refresh if needed.</p>
+            <p>Data Sources: Connected to Athena workgroup "CID."</p>
+            <img src="images/3.png" alt="CUDOS Dashboard v5">
+            <div class="image-caption">fig: CUDOS Dashboard v5</div>
+
+            <h3>AWS Athena</h3>
+            <p>Workgroup: "CID" with tables and views (e.g., summary_view). Avoid deleting views.</p>
+            <p>Queries: Run SQL to explore CUR data.</p>
+            <img src="images/4.png" alt="Athena Overview">
+            <div class="image-caption">fig: Athena Overview</div>
+            <img src="images/5.png" alt="Athena Overview">
+            <div class="image-caption">fig: Athena Overview</div>
+
+
+            <h3>AWS Glue</h3>
+            <p>Databases: Contains CUR tables.</p>
+            <p>Crawlers: Scheduled to index S3 data; view IAM roles and run history.</p>
+            <p>Tables: Check schemas for partitioned data.</p>
+            <img src="images/6.png" alt="Glue Database">
+            <div class="image-caption">fig: Select the Glue Database</div>
+            <b>a. Database:</b><p>In the left panel, click Database. You will see the database name; if you followed the steps, it will be your database. Otherwise, you will see your input. Click it to check for tables.</p>
+            <img src="images/7.png" alt="Glue Crawler">
+            <div class="image-caption">fig: Select the Database</div>
+            <img src="images/8.png" alt="Glue Crawler">
+            <div class="image-caption">fig: Glue Database Overview</div>
+            <b>c. Crawlers:</b><p>Navigate to left panel and click on Crawlers.</p>
+            <img src="images/9.png" alt="AWS Glue Crawler">
+            <div class="image-caption">fig: Glue Crawler Overview</div>
+            <p>To view the details of the crawler, click on the crawler.</p>
+            <img src="images/10.png" alt="Glue Crawler Details">
+            <div class="image-caption">fig: Glue Crawler Details</div>
+            <p>Here you can see the IAM roles it is using and other details like crawler run, schedule and many more.</p>
+
+            <h3>AWS Lambda</h3>
+            <p>Functions: Handle automation, like dashboard creation via cid-cmd.</p>
+            <img src="images/11.png" alt="Lambda Function">
+            <div class="image-caption">fig: Lambda Function Overview</div>
+            <b>a. Function:</b><p>Click on Functions in the left panel to see the list of functions created.</p>
+            <img src="images/12.png" alt="Lambda Function List">
+            <div class="image-caption">fig: Lambda Function List</div>
+            <b>b. Details:</b><p>Click on the function to see the details of the function.</p>
+            <img src="images/13.png" alt="Lambda Function Details">
+            <div class="image-caption">fig: Lambda Function Details</div>
+
+            <h3>AWS S3</h3>
+            <p>Buckets: Store CUR files (e.g., cid-account-number-local). Directories include manifests, partitions, and status files.</p>
+            <img src="images/14.png" alt="S3 Bucket">
+            <div class="image-caption">fig: S3 Bucket</div>
+            <b>a. Bucket:</b><p>Navigate to the left panel and click on buckets and search your local</p>
+            <p class="note">
+            <strong>Note:</strong> If you followed along, your bucket names will look like
+            <code>cid-account-number-local</code> and
+            <code>aws-athena-query-results-cid-account-id-region</code>.
+            </p>
+            <img src="images/15.png" alt="S3 Bucket Overview">
+            <div class="image-caption">fig: S3 Bucket Overview</div>
+            <b>b. bucket directories:</b><p>Click on object and click the directory</p>
+            <img src="images/16.png" alt="S3 Bucket Directories">
+            <div class="image-caption">fig: S3 Bucket Directories</div>
+
+            <h3>AWS CloudFormation</h3>
+            <p>Stacks: Manage resources; view events for deployment history. Update via Terraform to avoid conflicts.</p>
+            <img src="images/17.png" alt="CloudFormation Stack">
+            <div class="image-caption">fig: CloudFormation Stack Overview</div>
+            <img src="images/18.png" alt="CloudFormation Stack">
+            <div class="image-caption">fig: CloudFormation Stack Overview</div>
+            <img src="images/19.png" alt="CloudFormation Stack">
+            <div class="image-caption">fig: CloudFormation Stack Overview</div>
+            <img src="images/20.png" alt="CloudFormation Stack">
+            <div class="image-caption">fig: CloudFormation Stack Overview</div>
+
+            <h3>AWS Billing and Cost Management</h3>
+            <p>Data Exports: Configure CUR reports; view details for delivery settings.</p>
+            <img src="images/21.png" alt="CUR Report">
+            <div class="image-caption">fig: CUR Report Details</div>
+            <b>a. Data export:</b><p>In the left panel, click Data Export and select the report. If you deployed via Terraform with default values, the report name remains the same; otherwise, select your custom name.</p>
+            <img src="images/22.png" alt="CUR Report Details">
+            <div class="image-caption">fig: CUR Report Details</div>
+            <p>Here you can see the details of the report.</p>  
+            <img src="images/23.png" alt="CUR Report Details">
+            <div class="image-caption">fig: CUR Report Details</div>
+            <p>These services integrate to provide end-to-end data flow without manual intervention.</p>
+
+            <h2 id="tags">Adding User-Defined Tags</h2>
+            <p>Customize CUDOS by incorporating tags for grouping (e.g., by application or business unit) using cost allocation tags or categories.</p>
+
+            <h3>Prerequisites</h3>
+            <ul>
+                <li>Access to AWS Organizations.</li>
+                <li>Enable tags in Cost Explorer.</li>
+                <li>Activate AWS/user-generated tags.</li>
+                <li>Changes reflect in CUR after 24 hours.</li>
+            </ul>
+
+            <h3>Step-by-Step Guide</h3>
+            <p><strong>Add Cost Categories</strong></p>
+            <p>In Billing and Cost Management:</p>
+            <ol>
+                <li>Navigate to Cost Categories > Create.</li>
+                <li>Define rules (e.g., by account or tag values).</li>
+                <li>Set lookback periods if needed.</li>
+                <li>Review and create.</li>
+            </ol>
+
+            <p><strong>Modify Queries in Athena</strong></p>
+            <p>Select AwsDataCatalog and your database.</p>
+            <p>Edit views (e.g., summary_view): Add tag columns (e.g., lineitem_resourcetags_user_silo AS silo).</p>
+            <p>Update GROUP BY clauses.</p>
+            <pre><code class="language-sql">-- Add new column
+line_item_resource_tags_user_team AS team,
+
+-- Update GROUP BY
+GROUP BY 1, 2, 3, ..., team</code></pre>
+            <p>Run and verify.</p>
+            <p>Repeat for hourly_view and resource_view.</p>
+
+            <h2 id="exploring">Exploring the CUDOS Dashboard</h2>
+            <p>Once deployed, dive into CUDOS Dashboard v5 in QuickSight. Organized into interactive sheets, it provides granular, recommendation-driven analysis of CUR data. Use global filters (top-right) for time ranges, accounts, regions, or tags. Here's a hands-on tour of key sheets and features:</p>
+            
+            <ul>
+                <li>Start with Executive Billing Summary to instantly view your total AWS spend, top services, and budget versus actual in one clear dashboard. Click any number to drill down into accounts or regions.</li>
+                <img src="images/24.png" alt="Executive Billing Summary">
+                <li>Go to compute to filter by instance type, compare CPU idle against cost, and access one-click rightsizing or Spot/Graviton recommendations.</li>
+                <img src="images/25.png" alt="Compute Summary">
+                <li>Move to storage to identify old backups or unused EBS volumes and apply lifecycle policies to save immediately.</li>
+                <img src="images/26.png" alt="Storage Summary">
+                <li>Cost Monitoring on the based of regions</li>
+                <img src="images/27.png" alt="Cost by Regions">
+                <li>Monitoring based on the account</li>
+                <img src="images/28.png" alt="Cost occurred by account">
+                <li>Cost according to resource tags</li>
+                <img src="images/29.png" alt="Select TAGsplorer">
+                <img src="images/30.png" alt="Primary Tags">
+            </ul>
+
+            <h2 id="best-practices">Best Practices and Troubleshooting</h2>
+            <ul>
+                <li><strong>Tagging:</strong> Consistently tag resources for accurate breakdowns.</li>
+                <li><strong>Monitoring:</strong> Schedule reviews; integrate with SSO for security.</li>
+                <li><strong>Upgrades:</strong> Keep to v5+ for features like DynamoDB simulations.</li>
+                <li><strong>Common Issues:</strong> If tags don't appear, verify Athena views and QuickSight refreshes. CUR delays are normal.</li>
+            </ul>
+            <p>Organizations using CUDOS often achieve 15-25% cost savings through insights.</p>
+
+            <h2 id="conclusion">Conclusion</h2>
+            <p>Implementing CUDOS provides a robust tool for AWS cost management. From deployment with Terraform to custom tagging, this guide covers the essentials to start. Beyond visibility, CUDOS converts raw CUR data into actionable intelligence, offering ML-powered savings recommendations, resource-level insights, and accurate forecasting.</p>
+        </article>
+    </main>
+
+    <footer>
+        <a href="../../blog.html" class="back-button">← Back to blogs</a>
+    </footer>
+
+    <!-- Prism.js Syntax Highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-hcl.min.js"></script>
+</body>
+</html>

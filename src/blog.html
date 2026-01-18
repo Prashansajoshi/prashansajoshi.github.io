@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog - Prashansa</title>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Blog - Prashansa" />
+    <meta
+      name="description"
+      content="Read blog posts by Prashansa about DevOps, cloud computing, and more."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourwebsite.com/blog.html" />
+    <meta property="og:title" content="Blog - Prashansa" />
+    <meta
+      property="og:description"
+      content="Read blog posts by Prashansa about DevOps, cloud computing, and more."
+    />
+    <meta property="og:image" content="https://yourwebsite.com/assets/profile-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://yourwebsite.com/blog.html" />
+    <meta property="twitter:title" content="Blog - Prashansa" />
+    <meta
+      property="twitter:description"
+      content="Read blog posts by Prashansa about DevOps, cloud computing, and more."
+    />
+    <meta property="twitter:image" content="https://yourwebsite.com/assets/profile-image.jpg" />
+
+    <!-- Link -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="assets/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="assets/favicon/android-chrome-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="assets/favicon/android-chrome-512x512.png"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico" />
+    <link rel="manifest" href="assets/favicon/site.webmanifest" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+      integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+  </head>
+  <body>
+    <header id="hero">
+      <!-- Navbar -->
+      <nav class="navbar">
+        <div class="container">
+          <!-- Logo -->
+          <h1 id="logo">
+            <a href="index.html"
+              ><img src="./assets/logo.png" alt="Your Logo"
+            /></a>
+          </h1>
+          <!-- Navbar links -->
+          <ul class="nav-menu">
+            <li><a class="nav-link" href="index.html">HOME</a></li>
+            <li><a class="nav-link" href="index.html#projects">PROJECTS</a></li>
+            <li><a class="nav-link" href="index.html#footer">CONTACT</a></li>
+            <li><a class="nav-link" href="blog.html">BLOG</a></li>
+
+            <li>
+              <a
+                class="nav-link btn btn-primary"
+                href="https://github.com/CommunityPro/portfolio-html"
+                >RESUME <i class="fas fa-arrow-right"></i
+              ></a>
+            </li>
+
+            <!-- Toggle switch -->
+            <div class="theme-switch">
+              <input type="checkbox" id="switch" />
+              <label class="toggle-icons" for="switch">
+                <img class="moon" src="assets/moon.svg" />
+                <img class="sun" src="assets/sun.svg" />
+              </label>
+            </div>
+            <!-- Hamburger menu -->
+          </ul>
+          <div class="hamburger">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </div>
+      </nav>
+
+      <section class="header-container">
+        <h1>My Blog</h1>
+        <div class="content-text">
+          <h2>DevOps & Cloud Computing</h2>
+          <p>
+            Welcome to my blog where I share insights, tutorials, and experiences in the world of DevOps, cloud computing, and technology.
+          </p>
+        </div>
+      </section>
+    </header>
+
+    <!-- Blog Posts -->
+    <section class="blog-container container">
+      <div class="division"></div>
+      <div class="content-text">
+        <h2>Latest Posts</h2>
+        <p>Here are some of my recent articles</p>
+      </div>
+
+      <article class="blog-posts">
+        <!-- Blog Post 1 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>CUDOS Dashboard</h3>
+              <p class="date">January 15, 2024</p>
+              <p>
+                A comprehensive dashboard for monitoring and managing CUDOS blockchain nodes...
+              </p>
+            </div>
+            <div class="blog-link">
+              <a href="blog/CUDOS-dashboard/index.html" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Post 2 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>Velero Backup on Amazon EKS with Pod Identity</h3>
+              <p class="date">December 20, 2023</p>
+              <p>
+                Learn how to implement Velero backups on Amazon EKS using Pod Identity for secure and efficient backup management.
+            </div>
+            <div class="blog-link">
+              <a href="blog/VELERO-EKS-backup/index.html" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Post 3 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>Cloud Operations Is About Trade-offs, Not Tools</h3>
+              <p class="date">November 10, 2023</p>
+              <p>
+                Exploring the balance between different cloud operation strategies and the importance of making informed trade-offs...
+              </p>
+            </div>
+            <div class="blog-link">
+              <a href="blog/cloud-operations-tradeoffs/index.html" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Post 4 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>Docker for DevOps Engineers</h3>
+              <p class="date">October 5, 2023</p>
+              <p>
+                Essential Docker commands and best practices for containerization...
+              </p>
+            </div>
+            <div class="blog-link">
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Post 5 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>Monitoring with CloudWatch</h3>
+              <p class="date">September 18, 2023</p>
+              <p>
+                Setting up comprehensive monitoring for your AWS resources...
+              </p>
+            </div>
+            <div class="blog-link">
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Post 6 -->
+        <div class="blog-card">
+          <div class="blog-info">
+            <div class="blog-bio">
+              <h3>Kubernetes 101</h3>
+              <p class="date">August 30, 2023</p>
+              <p>
+                Introduction to Kubernetes and how to deploy your first cluster...
+              </p>
+            </div>
+            <div class="blog-link">
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer id="footer">
+      <div class="container">
+        <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
+        <!-- Social links -->
+        <div class="social">
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank"
+            ><img src="./assets/facebook-icon.svg" alt="Facebook"
+          /></a>
+          <a href="https://x.com/Prashansa_j11" target="_blank"
+            ><img src="./assets/twitter-icon.svg" alt="Twitter"
+          /></a>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank"
+            ><img src="./assets/linkedin-icon.svg" alt="Linkedin"
+          /></a>
+          <a href="https://github.com/prashansajoshi" target="_blank"
+            ><img src="./assets/github-icon.svg" alt="GitHub"
+          /></a>
+        </div>
+        <!-- Attribution -->
+        <div class="attribution">
+          <a
+            href="https://github.com/CommunityPro/portfolio-html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://user-images.githubusercontent.com/62628408/157202263-9174da24-b19a-4017-9b7c-a1d26ae8f014.svg"
+              alt="attribution"
+              width="150px"
+            />
+          </a>
+        </div>
+        <p>
+          Copyright &copy; Communitypro <span id="datee"></span>, All rights
+          reserved
+        </p>
+      </div>
+    </footer>
+    <script src="js/script.js"></script>
+    <script>
+      // For the copyright year
+      const year = new Date().getFullYear();
+      document.getElementById("datee").innerText = year;
+    </script>
+  </body>
+</html>
