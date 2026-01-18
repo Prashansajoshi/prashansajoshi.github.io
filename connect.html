@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connect with Prashansa Joshi | DevOps Engineer</title>
+    <meta name="description" content="Connect with Prashansa Joshi on various platforms - LinkedIn, GitHub, Twitter, AWS Community, and more." />
+    
+    <!-- Reuse your existing favicon links -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/favicon/favicon-32x32.png"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon/favicon.ico" />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+      integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/utilities.css" />
+    <style>
+      /* Additional styles for connect page */
+      .connect-hero {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .connect-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+      }
+      
+      .connect-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+      
+      .connect-card {
+        background: var(--card-bg-color);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      
+      .connect-card:hover {
+        transform: translateY(-5px);
+      }
+      
+      .connect-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--color-primary);
+      }
+      
+      .connect-card h3 {
+        margin-bottom: 1rem;
+        color: var(--color-text);
+      }
+      
+      .connect-card p {
+        color: var(--color-text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
+      
+      .connect-btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background: var(--color-primary);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s ease;
+      }
+      
+      .connect-btn:hover {
+        background: var(--color-primary-dark);
+      }
+      
+      .back-btn {
+        display: inline-block;
+        margin-top: 3rem;
+        padding: 0.8rem 1.5rem;
+        background: transparent;
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+        text-decoration: none;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+      
+      .back-btn:hover {
+        background: var(--color-primary);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar (Same as index.html) -->
+    <nav class="navbar">
+      <div class="container">
+        <h1 id="logo">
+          <a href="index.html"
+            ><img src="./assets/logo.png" alt="Prashansa Joshi"
+          /></a>
+        </h1>
+        <ul class="nav-menu">
+          <li><a class="nav-link" href="index.html">HOME</a></li>
+          <li><a class="nav-link" href="index.html#projects">PROJECTS</a></li>
+          <li><a class="nav-link" href="index.html#footer">CONTACT</a></li>
+          <li><a class="nav-link" href="blog.html">BLOG</a></li>
+          <li>
+            <a
+              class="nav-link btn btn-primary"
+              href="https://github.com/CommunityPro/portfolio-html"
+              >RESUME <i class="fas fa-arrow-right"></i
+            ></a>
+          </li>
+          <div class="theme-switch">
+            <input type="checkbox" id="switch" />
+            <label class="toggle-icons" for="switch">
+              <img class="moon" src="assets/moon.svg" />
+              <img class="sun" src="assets/sun.svg" />
+            </label>
+          </div>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section for Connect Page -->
+    <header class="connect-hero">
+      <div class="container">
+        <h1>Connect With Me</h1>
+        <p>Let's connect and collaborate! Here are all the platforms where you can find me.</p>
+      </div>
+    </header>
+
+    <!-- Connect Links Grid -->
+    <section class="connect-container">
+      <div class="content-text">
+        <h2>My Digital Presence</h2>
+        <p>I'm active on various platforms. Feel free to connect, follow, or reach out!</p>
+      </div>
+
+      <div class="connect-grid">
+        <!-- LinkedIn -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fab fa-linkedin"></i>
+          </div>
+          <h3>LinkedIn</h3>
+          <p>Professional networking, career updates, and industry insights</p>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank" class="connect-btn">
+            Connect on LinkedIn
+          </a>
+        </div>
+
+        <!-- GitHub -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fab fa-github"></i>
+          </div>
+          <h3>GitHub</h3>
+          <p>My open-source projects, code repositories, and contributions</p>
+          <a href="https://github.com/prashansajoshi" target="_blank" class="connect-btn">
+            View My GitHub
+          </a>
+        </div>
+
+        <!-- Twitter -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fab fa-twitter"></i>
+          </div>
+          <h3>Twitter / X</h3>
+          <p>Tech thoughts, DevOps tips, and community engagement</p>
+          <a href="https://x.com/Prashansa_j11" target="_blank" class="connect-btn">
+            Follow on Twitter
+          </a>
+        </div>
+
+        <!-- AWS Community -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fab fa-aws"></i>
+          </div>
+          <h3>AWS Community</h3>
+          <p>AWS Community Builder profile, cloud resources, and AWS content</p>
+          <a href="https://builder.aws.com/profile" target="_blank" class="connect-btn">
+            AWS Community
+          </a>
+        </div>
+
+        <!-- Facebook -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fab fa-facebook"></i>
+          </div>
+          <h3>Facebook</h3>
+          <p>Personal updates and tech community interactions</p>
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank" class="connect-btn">
+            Connect on Facebook
+          </a>
+        </div>
+
+        <!-- Email -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h3>Email</h3>
+          <p>For direct inquiries, collaborations, or professional discussions</p>
+          <a href="mailto:joshiprashansa11@gmail.com" class="connect-btn">
+            Send Email
+          </a>
+        </div>
+
+        <!-- Blog -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fas fa-blog"></i>
+          </div>
+          <h3>Technical Blog</h3>
+          <p>Articles, tutorials, and insights on DevOps & Cloud</p>
+          <a href="blog.html" class="connect-btn">
+            Read My Blog
+          </a>
+        </div>
+
+        <!-- Resume -->
+        <div class="connect-card">
+          <div class="connect-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3>Resume</h3>
+          <p>My professional experience, skills, and qualifications</p>
+          <a href="#" target="_blank" class="connect-btn">
+            View Resume
+          </a>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 3rem;">
+        <a href="index.html" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+      </div>
+    </section>
+
+    <!-- Footer (Same as index.html) -->
+    <footer id="footer">
+      <div class="container">
+        <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
+        <div class="social">
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank"><img src="./assets/facebook-icon.svg" alt="Facebook"/></a>
+          <a href="https://x.com/Prashansa_j11" target="_blank"><img src="./assets/twitter-icon.svg" alt="Twitter" /></a>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank"><img src="./assets/linkedin-icon.svg" alt="Linkedin"/></a>
+          <a href="https://github.com/prashansajoshi" target="_blank"><img src="./assets/github-icon.svg" alt="GitHub" /></a>
+        </div>
+        <div class="attribution">
+          <a
+            href="https://github.com/CommunityPro/portfolio-html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://user-images.githubusercontent.com/62628408/157202263-9174da24-b19a-4017-9b7c-a1d26ae8f014.svg"
+              alt="attribution"
+              width="150px"
+            />
+          </a>
+        </div>
+        <p>Copyright &copy; Prashansa Joshi <span id="datee"></span>, All rights reserved</p>
+      </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
