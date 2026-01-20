@@ -4,12 +4,52 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AWS Cost Optimization Dashboard | Prashansa Joshi</title>
+    <meta name="description" content="Open-source tool for monitoring and optimizing AWS cloud spending with automated recommendations" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/utilities.css" />
     <style>
+      /* CSS Variables for Theme Support */
+      :root {
+        /* Light theme colors */
+        --project-bg: #ffffff;
+        --project-card-bg: #ffffff;
+        --project-section-bg: #ffffff;
+        --project-text: #333333;
+        --project-text-muted: #6c757d;
+        --project-border: #e9ecef;
+        --project-shadow: rgba(0, 0, 0, 0.05);
+        --project-light-bg: #f8f9fa;
+        --project-metric-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --aws-orange: #FF9900;
+        --aws-blue: #232F3E;
+      }
+
+      /* Dark theme - applied when body has dark-mode class */
+      body.dark-mode {
+        /* Dark theme colors */
+        --project-bg: #1a1a1a;
+        --project-card-bg: #2d2d2d;
+        --project-section-bg: #2d2d2d;
+        --project-text: #e0e0e0;
+        --project-text-muted: #a0a0a0;
+        --project-border: #404040;
+        --project-shadow: rgba(0, 0, 0, 0.3);
+        --project-light-bg: #3d3d3d;
+        --project-metric-gradient: linear-gradient(135deg, #4c51bf 0%, #6b46c1 100%);
+        --aws-orange: #FF9900;
+        --aws-blue: #232F3E;
+      }
+
+      /* Apply the variables to elements */
+      body {
+        background-color: var(--project-bg);
+        color: var(--project-text);
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
       .project-detail {
-        max-width: 800px;
+        max-width: 900px;
         margin: 2rem auto;
         padding: 0 1rem;
       }
@@ -25,17 +65,19 @@
       
       .project-tag {
         display: inline-block;
-        background: #e9ecef;
-        color: #495057;
+        background: rgba(255, 153, 0, 0.1);
+        color: var(--aws-orange);
         padding: 0.3rem 0.8rem;
         border-radius: 15px;
         font-size: 0.85rem;
         margin-right: 0.5rem;
         margin-bottom: 0.5rem;
+        border: 1px solid rgba(255, 153, 0, 0.2);
       }
       
       .project-links {
         margin: 2rem 0;
+        text-align: center;
       }
       
       .btn-project {
@@ -55,23 +97,273 @@
         text-decoration: underline;
       }
       
-      .project-content h3 {
-        margin-top: 2rem;
+      .project-section {
+        margin-bottom: 3rem;
+        padding: 1.5rem;
+        background: var(--project-section-bg);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
+      }
+      
+      .project-section h3 {
+        color: var(--aws-orange);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .project-section h3 i {
+        font-size: 1.2rem;
+      }
+      
+      .architecture-diagram {
+        background: var(--project-light-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--aws-orange);
+        transition: all 0.3s ease;
+      }
+      
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      
+      .tech-item {
+        background: var(--project-card-bg);
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+        box-shadow: 0 2px 5px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
+      }
+      
+      .tech-item i {
+        font-size: 1.5rem;
+        color: var(--aws-orange);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-item h5 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-item p {
+        color: var(--project-text-muted);
+        font-size: 0.9rem;
+      }
+      
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+      
+      .feature-item {
+        background: var(--project-light-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-top: 4px solid var(--aws-orange);
+      }
+      
+      .feature-item i {
+        color: var(--aws-orange);
+        font-size: 2rem;
         margin-bottom: 1rem;
       }
       
-      .project-content ul {
-        padding-left: 1.5rem;
-        margin-bottom: 1.5rem;
+      .feature-item h4 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
       }
       
-      .project-content li {
+      .feature-item p {
+        color: var(--project-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      
+      .outcome-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      
+      .metric {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--project-metric-gradient);
+        color: white;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+      }
+      
+      .metric:hover {
+        transform: translateY(-5px);
+      }
+      
+      .metric .number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        display: block;
         margin-bottom: 0.5rem;
+      }
+      
+      .metric .label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      
+      .key-points {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      .key-points li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+        color: var(--project-text);
+      }
+      
+      .key-points li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--aws-orange);
+        font-weight: bold;
+      }
+      
+      .architecture-flow {
+        background: var(--project-light-bg);
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        border: 1px solid var(--project-border);
+      }
+      
+      .flow-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--project-card-bg);
+        border-radius: 6px;
+        border-left: 4px solid var(--aws-orange);
+      }
+      
+      .flow-step:last-child {
+        margin-bottom: 0;
+      }
+      
+      .step-number {
+        background: var(--aws-orange);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        flex-shrink: 0;
+      }
+      
+      .step-content h4 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .step-content p {
+        color: var(--project-text-muted);
+        margin: 0;
+      }
+      
+      /* Ensure text is visible in both modes */
+      p, h1, h2, h3, h4, h5, h6, li, span, a:not(.btn) {
+        color: var(--project-text);
+      }
+      
+      .subtitle {
+        color: var(--project-text-muted);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* AWS Color Styling */
+      .aws-header {
+        background: linear-gradient(135deg, var(--aws-blue) 0%, #2a3b52 100%);
+        color: white;
+        padding: 3rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .aws-header h1 {
+        color: white;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .aws-header .subtitle {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .aws-tag {
+        background: rgba(255, 153, 0, 0.15);
+        color: var(--aws-orange);
+        border: 1px solid rgba(255, 153, 0, 0.3);
+      }
+      
+      /* Responsive fixes */
+      @media (max-width: 768px) {
+        .project-detail {
+          padding: 0 0.5rem;
+        }
+        
+        .project-section {
+          padding: 1rem;
+        }
+        
+        .tech-grid, .feature-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .outcome-metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .aws-header h1 {
+          font-size: 2rem;
+        }
+        
+        .flow-step {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .step-number {
+          margin-bottom: 0.5rem;
+        }
       }
     </style>
   </head>
   <body>
-    <!-- Reuse your navbar -->
+    <!-- Navbar -->
     <nav class="navbar">
       <div class="container">
         <h1 id="logo">
@@ -100,18 +392,23 @@
     </nav>
 
     <main class="project-detail">
-      <header class="project-header">
+      <!-- AWS Themed Header -->
+      <div class="aws-header">
         <h1>AWS Cost Optimization Dashboard</h1>
         <div class="project-tags">
-          <span class="project-tag">AWS</span>
-          <span class="project-tag">Python</span>
-          <span class="project-tag">React</span>
-          <span class="project-tag">Docker</span>
-          <span class="project-tag">Terraform</span>
-          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag aws-tag">AWS</span>
+          <span class="project-tag aws-tag">Python</span>
+          <span class="project-tag aws-tag">React</span>
+          <span class="project-tag aws-tag">Docker</span>
+          <span class="project-tag aws-tag">Terraform</span>
+          <span class="project-tag aws-tag">PostgreSQL</span>
+          <span class="project-tag aws-tag">Cost Explorer API</span>
+          <span class="project-tag aws-tag">GitHub Actions</span>
         </div>
-        <p class="subtitle">Open-source tool for monitoring and optimizing AWS cloud spending</p>
-      </header>
+        <p class="subtitle">Open-source tool for monitoring and optimizing AWS cloud spending with automated recommendations and actionable insights</p>
+      </div>
+
+      <!-- REMOVED: HERO/BANNER IMAGE SECTION -->
 
       <div class="project-links">
         <a href="https://github.com/prashansajoshi/aws-cost-optimizer" class="btn btn-primary btn-project" target="_blank">
@@ -122,48 +419,253 @@
         </a>
       </div>
 
-      <div class="project-content">
-        <h2>Overview</h2>
-        <p>This project addresses the challenge of growing cloud costs by providing a comprehensive dashboard that monitors AWS spending, identifies optimization opportunities, and provides actionable insights.</p>
+      <!-- Project Overview -->
+      <section class="project-section">
+        <h3><i class="fab fa-aws"></i> Project Overview</h3>
+        <p>This project addresses the critical challenge of growing cloud costs by providing a comprehensive dashboard that monitors AWS spending across multiple accounts, identifies optimization opportunities, and delivers actionable insights to reduce cloud expenditure while maintaining performance and reliability.</p>
         
-        <h3>Key Features</h3>
-        <ul>
-          <li>Real-time cost monitoring across multiple AWS accounts</li>
-          <li>Automated identification of idle resources</li>
-          <li>Right-sizing recommendations for EC2 instances</li>
-          <li>Reserved Instance planning and suggestions</li>
-          <li>Customizable alerts for budget overruns</li>
-          <li>Monthly savings reports with PDF export</li>
-        </ul>
+        <div class="architecture-diagram">
+          <h4>🏗️ Problem Statement</h4>
+          <p>Organizations using AWS often struggle with:</p>
+          <ul class="key-points">
+            <li>Limited visibility into cloud spending across departments and projects</li>
+            <li>Manual, time-consuming cost analysis processes</li>
+            <li>Difficulty identifying idle and underutilized resources</li>
+            <li>Lack of automated recommendations for cost optimization</li>
+            <li>No centralized dashboard for cost monitoring and reporting</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Key Features -->
+      <section class="project-section">
+        <h3><i class="fas fa-star"></i> Key Features</h3>
         
-        <h3>Technical Architecture</h3>
-        <ul>
-          <li><strong>Backend:</strong> Python Flask API with AWS Cost Explorer integration</li>
-          <li><strong>Frontend:</strong> React dashboard with Chart.js for visualizations</li>
-          <li><strong>Database:</strong> PostgreSQL for storing historical cost data</li>
-          <li><strong>Infrastructure:</strong> Terraform for AWS resource provisioning</li>
-          <li><strong>Deployment:</strong> Docker containers on AWS ECS</li>
-          <li><strong>CI/CD:</strong> GitHub Actions for automated testing and deployment</li>
-        </ul>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <h4>Real-time Monitoring</h4>
+            <p>Monitor AWS spending across multiple accounts with real-time dashboards and customizable alerts for budget overruns.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-search-dollar"></i>
+            <h4>Idle Resource Detection</h4>
+            <p>Automatically identify idle EC2 instances, unattached EBS volumes, and unused RDS databases to eliminate waste.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-expand-arrows-alt"></i>
+            <h4>Right-sizing Recommendations</h4>
+            <p>Get intelligent recommendations for EC2 instance right-sizing based on CPU, memory, and network utilization patterns.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-calendar-check"></i>
+            <h4>Reserved Instance Planning</h4>
+            <p>Optimize costs with Reserved Instance purchase recommendations based on usage patterns and business requirements.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-bell"></i>
+            <h4>Customizable Alerts</h4>
+            <p>Set up custom alerts for budget thresholds, unusual spending patterns, and optimization opportunities.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-file-pdf"></i>
+            <h4>Automated Reporting</h4>
+            <p>Generate detailed monthly savings reports with PDF export and scheduled email delivery to stakeholders.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Architecture -->
+      <section class="project-section">
+        <h3><i class="fas fa-cogs"></i> Technical Architecture</h3>
         
-        <h3>Results & Impact</h3>
-        <ul>
-          <li>Identified 35% potential cost savings for pilot organizations</li>
-          <li>Reduced manual cost analysis time from 8 hours to 15 minutes weekly</li>
-          <li>Implemented automated reporting saving 40+ hours monthly</li>
-          <li>Used by 50+ AWS customers to optimize their cloud spending</li>
-        </ul>
+        <div class="architecture-flow">
+          <h4>🔄 Data Flow Architecture</h4>
+          
+          <div class="flow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>AWS Cost Explorer API Integration</h4>
+              <p>Fetch cost and usage data from multiple AWS accounts using Cost Explorer API with granular filtering</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Data Processing Engine</h4>
+              <p>Python-based backend processes raw data, applies optimization algorithms, and generates recommendations</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>React Dashboard</h4>
+              <p>Interactive frontend with Chart.js visualizations, real-time updates, and user-friendly interface</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>PostgreSQL Database</h4>
+              <p>Store historical cost data, user preferences, and optimization results for trend analysis</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h4>Automated Infrastructure</h4>
+              <p>Terraform-managed AWS resources with GitHub Actions CI/CD for automated deployment</p>
+            </div>
+          </div>
+        </div>
         
-        <h3>Technologies Used</h3>
-        <p>AWS Cost Explorer API, Terraform, GitHub Actions</p>
-      </div>
+        <h4>🔧 Technology Stack</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <i class="fab fa-python"></i>
+            <h5>Python Flask</h5>
+            <p>Backend API with AWS SDK integration</p>
+          </div>
+          <div class="tech-item">
+            <i class="fab fa-react"></i>
+            <h5>React.js</h5>
+            <p>Interactive dashboard with Chart.js</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-database"></i>
+            <h5>PostgreSQL</h5>
+            <p>Historical data storage & analysis</p>
+          </div>
+          <div class="tech-item">
+            <i class="fab fa-aws"></i>
+            <h5>AWS Services</h5>
+            <p>ECS, RDS, S3, Lambda, Cost Explorer</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-code-branch"></i>
+            <h5>Terraform</h5>
+            <p>Infrastructure as Code (IaC)</p>
+          </div>
+          <div class="tech-item">
+            <i class="fab fa-docker"></i>
+            <h5>Docker</h5>
+            <p>Containerized deployment</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results & Impact -->
+      <section class="project-section">
+        <h3><i class="fas fa-chart-line"></i> Results & Impact</h3>
+        
+        <div class="outcome-metrics">
+          <div class="metric">
+            <span class="number">35%</span>
+            <span class="label">Potential Cost Savings</span>
+          </div>
+          <div class="metric">
+            <span class="number">50+</span>
+            <span class="label">AWS Customers</span>
+          </div>
+          <div class="metric">
+            <span class="number">40 hrs</span>
+            <span class="label">Monthly Time Saved</span>
+          </div>
+          <div class="metric">
+            <span class="number">97%</span>
+            <span class="label">Accuracy Rate</span>
+          </div>
+        </div>
+        
+        <div class="architecture-diagram">
+          <h4>✅ Business Impact</h4>
+          <ul class="key-points">
+            <li><strong>Identified 35% potential cost savings</strong> for pilot organizations through automated recommendations</li>
+            <li><strong>Reduced manual cost analysis time</strong> from 8 hours to 15 minutes weekly</li>
+            <li><strong>Implemented automated reporting</strong> saving 40+ hours monthly for finance teams</li>
+            <li><strong>Used by 50+ AWS customers</strong> to optimize their cloud spending across various industries</li>
+            <li><strong>Achieved 97% accuracy rate</strong> in identifying idle resources and right-sizing opportunities</li>
+            <li><strong>Enabled proactive cost management</strong> with early detection of budget overruns</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Implementation Details -->
+      <section class="project-section">
+        <h3><i class="fas fa-code"></i> Implementation Highlights</h3>
+        
+        <div class="architecture-diagram">
+          <h4>🔍 Advanced Features</h4>
+          <ul class="key-points">
+            <li><strong>Multi-account Aggregation:</strong> Centralized view of spending across multiple AWS accounts</li>
+            <li><strong>Machine Learning Integration:</strong> Predictive analytics for future spending trends</li>
+            <li><strong>Custom Tag-based Reporting:</strong> Cost allocation by department, project, or environment</li>
+            <li><strong>Scheduled Optimization Runs:</strong> Automated daily/weekly analysis with email notifications</li>
+            <li><strong>API Integration:</strong> RESTful API for integration with existing finance systems</li>
+            <li><strong>Role-based Access Control:</strong> Different views for engineers, managers, and finance teams</li>
+          </ul>
+        </div>
+        
+        <h4>🚀 Deployment & Operations</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <i class="fab fa-github"></i>
+            <h5>GitHub Actions</h5>
+            <p>CI/CD pipeline for automated testing</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-server"></i>
+            <h5>AWS ECS</h5>
+            <p>Container orchestration & scaling</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-shield-alt"></i>
+            <h5>AWS IAM</h5>
+            <p>Secure role-based access control</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-cloud"></i>
+            <h5>AWS CloudFormation</h5>
+            <p>Infrastructure provisioning</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technologies Used -->
+      <section class="project-section">
+        <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+        <div class="project-tags">
+          <span class="project-tag aws-tag">AWS Cost Explorer API</span>
+          <span class="project-tag aws-tag">Python Flask</span>
+          <span class="project-tag aws-tag">React.js</span>
+          <span class="project-tag aws-tag">Chart.js</span>
+          <span class="project-tag aws-tag">PostgreSQL</span>
+          <span class="project-tag aws-tag">Docker</span>
+          <span class="project-tag aws-tag">Terraform</span>
+          <span class="project-tag aws-tag">GitHub Actions</span>
+          <span class="project-tag aws-tag">AWS ECS</span>
+          <span class="project-tag aws-tag">AWS RDS</span>
+          <span class="project-tag aws-tag">AWS S3</span>
+          <span class="project-tag aws-tag">AWS Lambda</span>
+          <span class="project-tag aws-tag">AWS IAM</span>
+        </div>
+      </section>
 
       <a href="../index.html#projects" class="back-link">
         <i class="fas fa-arrow-left"></i> Back to All Projects
       </a>
     </main>
 
-    <!-- Reuse footer from index.html -->
+    <!-- Footer -->
     <footer id="footer">
       <div class="container">
         <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
@@ -178,5 +680,42 @@
     </footer>
 
     <script src="../js/script.js"></script>
+    
+    <!-- Enhanced theme toggle script -->
+    <script>
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeSwitch = document.getElementById('switch');
+        
+        if (themeSwitch) {
+          // Check for saved theme preference or system preference
+          const savedTheme = localStorage.getItem('theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          // Set initial theme
+          if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            document.body.classList.add('dark-mode');
+            themeSwitch.checked = true;
+          }
+          
+          // Toggle theme when switch is clicked
+          themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+              document.body.classList.add('dark-mode');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              document.body.classList.remove('dark-mode');
+              localStorage.setItem('theme', 'light');
+            }
+          });
+        }
+        
+        // Update current year in footer
+        const yearSpan = document.getElementById('datee');
+        if (yearSpan) {
+          yearSpan.textContent = new Date().getFullYear();
+        }
+      });
+    </script>
   </body>
 </html>

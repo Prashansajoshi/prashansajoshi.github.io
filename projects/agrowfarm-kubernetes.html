@@ -9,6 +9,41 @@
     <link rel="stylesheet" href="../css/style.css" />
     <link rel="stylesheet" href="../css/utilities.css" />
     <style>
+      /* CSS Variables for both themes */
+      :root {
+        /* Light theme colors */
+        --project-bg: #ffffff;
+        --project-card-bg: #ffffff;
+        --project-section-bg: #ffffff;
+        --project-text: #333333;
+        --project-text-muted: #6c757d;
+        --project-border: #e9ecef;
+        --project-shadow: rgba(0, 0, 0, 0.05);
+        --project-light-bg: #f8f9fa;
+        --project-metric-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      /* Dark theme - applied when body has dark-mode class */
+      body.dark-mode {
+        /* Dark theme colors */
+        --project-bg: #1a1a1a;
+        --project-card-bg: #2d2d2d;
+        --project-section-bg: #2d2d2d;
+        --project-text: #e0e0e0;
+        --project-text-muted: #a0a0a0;
+        --project-border: #404040;
+        --project-shadow: rgba(0, 0, 0, 0.3);
+        --project-light-bg: #3d3d3d;
+        --project-metric-gradient: linear-gradient(135deg, #4c51bf 0%, #6b46c1 100%);
+      }
+
+      /* Apply the variables to elements */
+      body {
+        background-color: var(--project-bg);
+        color: var(--project-text);
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
       .project-detail {
         max-width: 900px;
         margin: 2rem auto;
@@ -59,9 +94,11 @@
       .project-section {
         margin-bottom: 3rem;
         padding: 1.5rem;
-        background: var(--card-bg-color);
+        background: var(--project-section-bg);
         border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 10px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
       }
       
       .project-section h3 {
@@ -77,14 +114,15 @@
       }
       
       .architecture-diagram {
-        background: #f8f9fa;
+        background: var(--project-light-bg);
         padding: 1.5rem;
         border-radius: 8px;
         margin: 1.5rem 0;
         border-left: 4px solid var(--color-primary);
+        transition: all 0.3s ease;
       }
       
-      /* NEW: Image styling */
+      /* Image styling */
       .project-hero-image {
         margin: 2rem 0;
         text-align: center;
@@ -95,7 +133,7 @@
         max-height: 400px;
         object-fit: cover;
         border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px var(--project-shadow);
       }
       
       .project-image {
@@ -105,39 +143,14 @@
       .project-image img {
         width: 100%;
         border-radius: 8px;
-        border: 1px solid #e9ecef;
+        border: 1px solid var(--project-border);
       }
       
       .image-caption {
         text-align: center;
         font-style: italic;
-        color: #6c757d;
+        color: var(--project-text-muted);
         font-size: 0.9rem;
-        margin-top: 0.5rem;
-      }
-      
-      .project-image-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        margin: 2rem 0;
-      }
-      
-      .image-with-caption {
-        text-align: center;
-      }
-      
-      .image-with-caption img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid #e9ecef;
-      }
-      
-      .image-with-caption p {
-        font-size: 0.85rem;
-        color: #6c757d;
         margin-top: 0.5rem;
       }
       
@@ -149,17 +162,29 @@
       }
       
       .tech-item {
-        background: white;
+        background: var(--project-card-bg);
         padding: 1rem;
         border-radius: 6px;
         text-align: center;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 5px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
       }
       
       .tech-item i {
         font-size: 1.5rem;
         color: var(--color-primary);
         margin-bottom: 0.5rem;
+      }
+      
+      .tech-item h5 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-item p {
+        color: var(--project-text-muted);
+        font-size: 0.9rem;
       }
       
       .outcome-metrics {
@@ -172,7 +197,7 @@
       .metric {
         text-align: center;
         padding: 1rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--project-metric-gradient);
         color: white;
         border-radius: 8px;
       }
@@ -197,6 +222,7 @@
         padding: 0.5rem 0;
         padding-left: 1.5rem;
         position: relative;
+        color: var(--project-text);
       }
       
       .key-points li:before {
@@ -205,6 +231,88 @@
         left: 0;
         color: var(--color-primary);
         font-weight: bold;
+      }
+      
+      /* Implementation points styling */
+      .implementation-points {
+        margin: 2rem 0;
+      }
+      
+      .point-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--project-light-bg);
+        border-radius: 8px;
+        border-left: 4px solid var(--color-primary);
+        transition: all 0.3s ease;
+      }
+      
+      .point-icon {
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        margin-right: 1rem;
+        margin-top: 0.5rem;
+        min-width: 40px;
+      }
+      
+      .point-content h5 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+      
+      .point-content > p {
+        color: var(--project-text-muted);
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+      }
+      
+      .point-content ul {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0.5rem;
+      }
+      
+      .point-content li {
+        padding: 0.2rem 0;
+        color: var(--project-text);
+        font-size: 0.95rem;
+      }
+      
+      .point-content strong {
+        color: var(--color-primary);
+        min-width: 100px;
+        display: inline-block;
+      }
+
+      /* Ensure text is visible in both modes */
+      p, h1, h2, h3, h4, h5, h6, li, span, a:not(.btn) {
+        color: var(--project-text);
+      }
+      
+      .subtitle {
+        color: var(--project-text-muted);
+      }
+
+      /* Responsive fixes */
+      @media (max-width: 768px) {
+        .project-detail {
+          padding: 0 0.5rem;
+        }
+        
+        .project-section {
+          padding: 1rem;
+        }
+        
+        .tech-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+        
+        .outcome-metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
       }
     </style>
   </head>
@@ -255,8 +363,8 @@
 
       <!-- HERO/BANNER IMAGE -->
       <div class="project-hero-image">
-        <img src="../assets/project/agrowfarm-banner.jpg" alt="AgrowFarm Kubernetes Architecture" class="project-main-image">
-        <p class="image-caption">AgrowFarm Kubernetes Deployment Architecture</p>
+        <!-- <img src="../assets/project/agrowfarm-banner.jpg" alt="AgrowFarm Kubernetes Architecture" class="project-main-image"> -->
+        <!-- <p class="image-caption">AgrowFarm Kubernetes Deployment Architecture</p> -->
       </div>
 
       <div class="project-links">
@@ -278,7 +386,7 @@
           
           <!-- ARCHITECTURE DIAGRAM IMAGE -->
           <div class="project-image">
-            <img src="../assets/project/AgrowFarm-architecture.png" alt="AgrowFarm Architecture Diagram">
+            <img src="../assets/project/AgrowFarm.png" alt="AgrowFarm Architecture Diagram">
             <p class="image-caption">Figure 1: Kubernetes cluster architecture with Ingress, Services, and Pods</p>
           </div>
           
@@ -296,71 +404,80 @@
       <section class="project-section">
         <h3><i class="fas fa-cogs"></i> Technical Implementation</h3>
         
-        <h4>⚙️ Key Kubernetes Components Used</h4>
-        <div class="tech-grid">
-          <div class="tech-item">
-            <div class="tech-image">
-              <img src="../assets/project/EKS-Deployments.jpg" alt="Deployment Diagram">
-            </div>
-            <i class="fas fa-rocket"></i>
-            <h5>Deployments</h5>
-            <p>Stateless application services with rolling updates</p>
-          </div>
-          <div class="tech-item">
-           <div class="tech-image">
-              <img src="../assets/project/EKS-StatefulSets.jpg" alt="StatefulSets Diagram">
-            </div>
-            <i class="fas fa-database"></i>
-            <h5>StatefulSets</h5>
-            <p>Database workloads with persistent identity</p>
-          </div>
-          <div class="tech-item">
-           <div class="tech-image">
-              <img src="../assets/project/EKS-Services.jpg" alt="Services Diagram">
-            </div>
-            <i class="fas fa-network-wired"></i>
-            <h5>Services</h5>
-            <p>ClusterIP and NodePort for service discovery</p>
-          </div>
-          <div class="tech-item">
-           <div class="tech-image">
-              <img src="../assets/project/EKS-IngressController.jpg" alt="Ingress Controller Diagram">
-            </div>
-            <i class="fas fa-route"></i>
-            <h5>Ingress Controller</h5>
-            <p>HTTP/HTTPS routing using domain names</p>
-          </div>
-          <div class="tech-item">
-           <div class="tech-image">
-              <img src="../assets/project/EKS-ConfigMaps-Secrets.jpg" alt="ConfigMaps & Secrets Diagram">
-            </div>
-            <i class="fas fa-key"></i>
-            <h5>ConfigMaps & Secrets</h5>
-            <p>Environment variables and credentials management</p>
-          </div>
-          <div class="tech-item">
-           <div class="tech-image">
-              <img src="../assets/project/EKS-Deployments.jpg" alt="PV Diagram">
-            </div>
-            <i class="fas fa-hdd"></i>
-            <h5>Persistent Volumes</h5>
-            <p>Data persistence across pod restarts</p>
-          </div>
-        </div>
+        <h4>⚙️ Kubernetes Resource Configuration</h4>
+        <p>Each Kubernetes resource was configured using declarative YAML manifests for reproducible and version-controlled infrastructure:</p>
         
-        <!-- KUBERNETES DASHBOARD IMAGES -->
-        <div class="project-image-grid">
-          <div class="image-with-caption">
-            <img src="../assets/project/kubernetes-dashboard.png" alt="Kubernetes Dashboard">
-            <p>Kubernetes Dashboard showing running pods</p>
+        <div class="implementation-points">
+          <div class="point-item">
+            <i class="fas fa-rocket point-icon"></i>
+            <div class="point-content">
+              <h5>Deployments</h5>
+              <p>Managed stateless application pods with rolling update strategy</p>
+              <ul>
+                <li><strong>Replicas:</strong> 3-5 per service</li>
+                <li><strong>Strategy:</strong> RollingUpdate (maxSurge: 25%, maxUnavailable: 25%)</li>
+              </ul>
+            </div>
           </div>
-          <div class="image-with-caption">
-            <img src="../assets/project/yaml-manifests.png" alt="Kubernetes Manifests">
-            <p>Kubernetes YAML configuration files</p>
+          
+          <div class="point-item">
+            <i class="fas fa-database point-icon"></i>
+            <div class="point-content">
+              <h5>StatefulSets</h5>
+              <p>Managed stateful workloads with stable network identities</p>
+              <ul>
+                <li><strong>Services:</strong> PostgreSQL (master/replica), Redis cache</li>
+                <li><strong>Storage:</strong> PersistentVolumeClaims with 20GB allocated</li>
+              </ul>
+            </div>
           </div>
-          <div class="image-with-caption">
-            <img src="../assets/project/ingress-config.png" alt="Ingress Configuration">
-            <p>Ingress controller configuration</p>
+          
+          <div class="point-item">
+            <i class="fas fa-network-wired point-icon"></i>
+            <div class="point-content">
+              <h5>Services</h5>
+              <p>Network abstraction layer for service discovery and load balancing</p>
+              <ul>
+                <li><strong>Types:</strong> ClusterIP (internal), NodePort (development), LoadBalancer (external)</li>
+                <li><strong>Ports:</strong> Defined for web (80/443), API (3000), DB (5432)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="point-item">
+            <i class="fas fa-route point-icon"></i>
+            <div class="point-content">
+              <h5>Ingress Controller</h5>
+              <p>Managed external HTTP/HTTPS traffic routing using Nginx Ingress</p>
+              <ul>
+                <li><strong>Domains:</strong> agrow.farm, shop.agrow.farm, api.agrow.farm</li>
+                <li><strong>SSL:</strong> LetsEncrypt certificates via cert-manager</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="point-item">
+            <i class="fas fa-key point-icon"></i>
+            <div class="point-content">
+              <h5>ConfigMaps & Secrets</h5>
+              <p>Externalized configuration management for environment variables and credentials</p>
+              <ul>
+                <li><strong>ConfigMaps:</strong> 15+ configuration files</li>
+                <li><strong>Secrets:</strong> Base64 encoded, mounted as volumes/env vars</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="point-item">
+            <i class="fas fa-hdd point-icon"></i>
+            <div class="point-content">
+              <h5>Persistent Volumes</h5>
+              <p>Provided persistent storage for databases using dynamic provisioning</p>
+              <ul>
+                <li><strong>Storage Class:</strong> gp2 (AWS EBS)</li>
+                <li><strong>Access Modes:</strong> ReadWriteOnce, ReadWriteMany</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -368,12 +485,6 @@
       <!-- Monitoring & Reliability -->
       <section class="project-section">
         <h3><i class="fas fa-chart-line"></i> Monitoring & Reliability</h3>
-        
-        <!-- MONITORING DASHBOARD IMAGE -->
-        <div class="project-image">
-          <img src="../assets/project/prometheus-grafana-dashboard.png" alt="Monitoring Dashboard">
-          <p class="image-caption">Figure 2: Prometheus & Grafana monitoring dashboard for AgrowFarm cluster</p>
-        </div>
         
         <ul class="key-points">
           <li>Integrated Prometheus and Alertmanager for cluster and application monitoring</li>
@@ -407,17 +518,11 @@
       <section class="project-section">
         <h3><i class="fas fa-code-branch"></i> CI/CD & Operations</h3>
         
-        <!-- CI/CD PIPELINE IMAGE -->
-        <div class="project-image">
-          <img src="../assets/project/cicd-pipeline.png" alt="CI/CD Pipeline">
-          <p class="image-caption">Figure 3: GitLab CI/CD pipeline for automated testing and deployment</p>
-        </div>
-        
         <ul class="key-points">
           <li>Kubernetes manifests version-controlled for declarative infrastructure management</li>
           <li>Enabled smooth application updates using rolling deployments with minimal downtime</li>
           <li>Improved operational efficiency by automating scaling and recovery using Kubernetes features</li>
-          <li>GitLab CI/CD pipeline for automated testing and deployment</li>
+          <li>CI/CD pipeline for automated testing and deployment</li>
           <li>Infrastructure as Code using Terraform for cloud resources</li>
           <li>Blue-Green deployment strategy for risk-free releases</li>
         </ul>
@@ -489,13 +594,11 @@
           <span class="project-tag">Prometheus</span>
           <span class="project-tag">Grafana</span>
           <span class="project-tag">Nginx Ingress</span>
-          <span class="project-tag">GitLab CI/CD</span>
+          <span class="project-tag">CI/CD</span>
           <span class="project-tag">Terraform</span>
           <span class="project-tag">AWS EKS</span>
           <span class="project-tag">PostgreSQL</span>
           <span class="project-tag">Redis</span>
-          <span class="project-tag">Node.js</span>
-          <span class="project-tag">React</span>
         </div>
       </section>
 
@@ -519,5 +622,42 @@
     </footer>
 
     <script src="../js/script.js"></script>
+    
+    <!-- Enhanced theme toggle script -->
+    <script>
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeSwitch = document.getElementById('switch');
+        
+        if (themeSwitch) {
+          // Check for saved theme preference or system preference
+          const savedTheme = localStorage.getItem('theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          // Set initial theme
+          if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            document.body.classList.add('dark-mode');
+            themeSwitch.checked = true;
+          }
+          
+          // Toggle theme when switch is clicked
+          themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+              document.body.classList.add('dark-mode');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              document.body.classList.remove('dark-mode');
+              localStorage.setItem('theme', 'light');
+            }
+          });
+        }
+        
+        // Update current year in footer
+        const yearSpan = document.getElementById('datee');
+        if (yearSpan) {
+          yearSpan.textContent = new Date().getFullYear();
+        }
+      });
+    </script>
   </body>
 </html>
