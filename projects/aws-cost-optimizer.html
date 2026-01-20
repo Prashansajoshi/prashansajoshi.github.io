@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AWS Cost Optimization Dashboard | Prashansa Joshi</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/utilities.css" />
+    <style>
+      .project-detail {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      
+      .project-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      
+      .project-tags {
+        margin: 1rem 0;
+      }
+      
+      .project-tag {
+        display: inline-block;
+        background: #e9ecef;
+        color: #495057;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .project-links {
+        margin: 2rem 0;
+      }
+      
+      .btn-project {
+        display: inline-block;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--color-primary);
+        text-decoration: none;
+      }
+      
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      
+      .project-content h3 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      
+      .project-content ul {
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .project-content li {
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Reuse your navbar -->
+    <nav class="navbar">
+      <div class="container">
+        <h1 id="logo">
+          <a href="../index.html"><img src="../assets/logo.png" alt="Prashansa Joshi" /></a>
+        </h1>
+        <ul class="nav-menu">
+          <li><a class="nav-link" href="../index.html">HOME</a></li>
+          <li><a class="nav-link" href="../index.html#projects">PROJECTS</a></li>
+          <li><a class="nav-link" href="../index.html#footer">CONTACT</a></li>
+          <li><a class="nav-link" href="../blog.html">BLOG</a></li>
+          <li><a class="nav-link btn btn-primary" href="#">RESUME <i class="fas fa-arrow-right"></i></a></li>
+          <div class="theme-switch">
+            <input type="checkbox" id="switch" />
+            <label class="toggle-icons" for="switch">
+              <img class="moon" src="../assets/moon.svg" />
+              <img class="sun" src="../assets/sun.svg" />
+            </label>
+          </div>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="project-detail">
+      <header class="project-header">
+        <h1>AWS Cost Optimization Dashboard</h1>
+        <div class="project-tags">
+          <span class="project-tag">AWS</span>
+          <span class="project-tag">Python</span>
+          <span class="project-tag">React</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">Terraform</span>
+          <span class="project-tag">PostgreSQL</span>
+        </div>
+        <p class="subtitle">Open-source tool for monitoring and optimizing AWS cloud spending</p>
+      </header>
+
+      <div class="project-links">
+        <a href="https://github.com/prashansajoshi/aws-cost-optimizer" class="btn btn-primary btn-project" target="_blank">
+          <i class="fab fa-github"></i> View on GitHub
+        </a>
+        <a href="https://demo.prashansajoshi.com" class="btn btn-secondary btn-project" target="_blank">
+          <i class="fas fa-external-link-alt"></i> Live Demo
+        </a>
+      </div>
+
+      <div class="project-content">
+        <h2>Overview</h2>
+        <p>This project addresses the challenge of growing cloud costs by providing a comprehensive dashboard that monitors AWS spending, identifies optimization opportunities, and provides actionable insights.</p>
+        
+        <h3>Key Features</h3>
+        <ul>
+          <li>Real-time cost monitoring across multiple AWS accounts</li>
+          <li>Automated identification of idle resources</li>
+          <li>Right-sizing recommendations for EC2 instances</li>
+          <li>Reserved Instance planning and suggestions</li>
+          <li>Customizable alerts for budget overruns</li>
+          <li>Monthly savings reports with PDF export</li>
+        </ul>
+        
+        <h3>Technical Architecture</h3>
+        <ul>
+          <li><strong>Backend:</strong> Python Flask API with AWS Cost Explorer integration</li>
+          <li><strong>Frontend:</strong> React dashboard with Chart.js for visualizations</li>
+          <li><strong>Database:</strong> PostgreSQL for storing historical cost data</li>
+          <li><strong>Infrastructure:</strong> Terraform for AWS resource provisioning</li>
+          <li><strong>Deployment:</strong> Docker containers on AWS ECS</li>
+          <li><strong>CI/CD:</strong> GitHub Actions for automated testing and deployment</li>
+        </ul>
+        
+        <h3>Results & Impact</h3>
+        <ul>
+          <li>Identified 35% potential cost savings for pilot organizations</li>
+          <li>Reduced manual cost analysis time from 8 hours to 15 minutes weekly</li>
+          <li>Implemented automated reporting saving 40+ hours monthly</li>
+          <li>Used by 50+ AWS customers to optimize their cloud spending</li>
+        </ul>
+        
+        <h3>Technologies Used</h3>
+        <p>AWS Cost Explorer API, Terraform, GitHub Actions</p>
+      </div>
+
+      <a href="../index.html#projects" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to All Projects
+      </a>
+    </main>
+
+    <!-- Reuse footer from index.html -->
+    <footer id="footer">
+      <div class="container">
+        <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
+        <div class="social">
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank"><img src="../assets/facebook-icon.svg" alt="Facebook"/></a>
+          <a href="https://x.com/Prashansa_j11" target="_blank"><img src="../assets/twitter-icon.svg" alt="Twitter" /></a>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank"><img src="../assets/linkedin-icon.svg" alt="Linkedin"/></a>
+          <a href="https://github.com/prashansajoshi" target="_blank"><img src="../assets/github-icon.svg" alt="GitHub" /></a>
+        </div>
+        <p>Copyright &copy; Prashansa Joshi <span id="datee"></span>, All rights reserved</p>
+      </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+  </body>
+</html>

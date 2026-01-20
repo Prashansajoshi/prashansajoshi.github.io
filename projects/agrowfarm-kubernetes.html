@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgrowFarm on Kubernetes | Prashansa Joshi</title>
+    <meta name="description" content="Containerized agriculture web platform deployed on Kubernetes for high availability and scalability" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/utilities.css" />
+    <style>
+      .project-detail {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      
+      .project-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      
+      .project-tags {
+        margin: 1rem 0;
+      }
+      
+      .project-tag {
+        display: inline-block;
+        background: rgba(108, 99, 255, 0.1);
+        color: var(--color-primary);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .project-links {
+        margin: 2rem 0;
+      }
+      
+      .btn-project {
+        display: inline-block;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--color-primary);
+        text-decoration: none;
+      }
+      
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      
+      .project-section {
+        margin-bottom: 3rem;
+        padding: 1.5rem;
+        background: var(--card-bg-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+      
+      .project-section h3 {
+        color: var(--color-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .project-section h3 i {
+        font-size: 1.2rem;
+      }
+      
+      .architecture-diagram {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--color-primary);
+      }
+      
+      /* NEW: Image styling */
+      .project-hero-image {
+        margin: 2rem 0;
+        text-align: center;
+      }
+      
+      .project-main-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      
+      .project-image {
+        margin: 1.5rem 0;
+      }
+      
+      .project-image img {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      
+      .image-caption {
+        text-align: center;
+        font-style: italic;
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+      
+      .project-image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      
+      .image-with-caption {
+        text-align: center;
+      }
+      
+      .image-with-caption img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+      }
+      
+      .image-with-caption p {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+      }
+      
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      
+      .tech-item {
+        background: white;
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .tech-item i {
+        font-size: 1.5rem;
+        color: var(--color-primary);
+        margin-bottom: 0.5rem;
+      }
+      
+      .outcome-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      
+      .metric {
+        text-align: center;
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+      }
+      
+      .metric .number {
+        font-size: 2rem;
+        font-weight: bold;
+        display: block;
+      }
+      
+      .metric .label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      
+      .key-points {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      .key-points li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+      
+      .key-points li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--color-primary);
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container">
+        <h1 id="logo">
+          <a href="../index.html"><img src="../assets/logo.png" alt="Prashansa Joshi" /></a>
+        </h1>
+        <ul class="nav-menu">
+          <li><a class="nav-link" href="../index.html">HOME</a></li>
+          <li><a class="nav-link" href="../index.html#projects">PROJECTS</a></li>
+          <li><a class="nav-link" href="../index.html#footer">CONTACT</a></li>
+          <li><a class="nav-link" href="../blog.html">BLOG</a></li>
+          <li><a class="nav-link btn btn-primary" href="#">RESUME <i class="fas fa-arrow-right"></i></a></li>
+          <div class="theme-switch">
+            <input type="checkbox" id="switch" />
+            <label class="toggle-icons" for="switch">
+              <img class="moon" src="../assets/moon.svg" />
+              <img class="sun" src="../assets/sun.svg" />
+            </label>
+          </div>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="project-detail">
+      <header class="project-header">
+        <h1>AgrowFarm on Kubernetes</h1>
+        <div class="project-tags">
+          <span class="project-tag">Kubernetes</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">Prometheus</span>
+          <span class="project-tag">Ingress Controller</span>
+          <span class="project-tag">StatefulSets</span>
+          <span class="project-tag">Helm</span>
+          <span class="project-tag">CI/CD</span>
+          <span class="project-tag">Monitoring</span>
+        </div>
+        <p class="subtitle">Containerized agriculture web platform deployed on Kubernetes for high availability and scalability</p>
+      </header>
+
+      <!-- HERO/BANNER IMAGE -->
+      <div class="project-hero-image">
+        <img src="../assets/project/agrowfarm-banner.jpg" alt="AgrowFarm Kubernetes Architecture" class="project-main-image">
+        <p class="image-caption">AgrowFarm Kubernetes Deployment Architecture</p>
+      </div>
+
+      <div class="project-links">
+        <a href="#" class="btn btn-primary btn-project">
+          <i class="fab fa-github"></i> View Code (Confidential)
+        </a>
+        <a href="#" class="btn btn-secondary btn-project">
+          <i class="fas fa-file-alt"></i> Case Study
+        </a>
+      </div>
+
+      <!-- Project Overview -->
+      <section class="project-section">
+        <h3><i class="fas fa-leaf"></i> Project Overview</h3>
+        <p>AgrowFarm is an agriculture-focused web platform designed to support digital farming operations, including product listings, services, and scalable access for users. The project was containerized and deployed on Kubernetes to ensure high availability, scalability, and reliable infrastructure management.</p>
+        
+        <div class="architecture-diagram">
+          <h4>🏗️ Architecture Overview</h4>
+          
+          <!-- ARCHITECTURE DIAGRAM IMAGE -->
+          <div class="project-image">
+            <img src="../assets/project/AgrowFarm-architecture.png" alt="AgrowFarm Architecture Diagram">
+            <p class="image-caption">Figure 1: Kubernetes cluster architecture with Ingress, Services, and Pods</p>
+          </div>
+          
+          <p>The application was containerized using Docker and deployed on a Kubernetes cluster with the following components:</p>
+          <ul class="key-points">
+            <li>Kubernetes resources such as Deployments, Services, StatefulSets, and Ingress</li>
+            <li>Domain-based routing (agrow.farm, shop.agrow.farm) for external access</li>
+            <li>Persistent storage for databases using PV and PVC</li>
+            <li>Internal service-to-service communication through ClusterIP services</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Technical Implementation -->
+      <section class="project-section">
+        <h3><i class="fas fa-cogs"></i> Technical Implementation</h3>
+        
+        <h4>⚙️ Key Kubernetes Components Used</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <div class="tech-image">
+              <img src="../assets/project/EKS-Deployments.jpg" alt="Deployment Diagram">
+            </div>
+            <i class="fas fa-rocket"></i>
+            <h5>Deployments</h5>
+            <p>Stateless application services with rolling updates</p>
+          </div>
+          <div class="tech-item">
+           <div class="tech-image">
+              <img src="../assets/project/EKS-StatefulSets.jpg" alt="StatefulSets Diagram">
+            </div>
+            <i class="fas fa-database"></i>
+            <h5>StatefulSets</h5>
+            <p>Database workloads with persistent identity</p>
+          </div>
+          <div class="tech-item">
+           <div class="tech-image">
+              <img src="../assets/project/EKS-Services.jpg" alt="Services Diagram">
+            </div>
+            <i class="fas fa-network-wired"></i>
+            <h5>Services</h5>
+            <p>ClusterIP and NodePort for service discovery</p>
+          </div>
+          <div class="tech-item">
+           <div class="tech-image">
+              <img src="../assets/project/EKS-IngressController.jpg" alt="Ingress Controller Diagram">
+            </div>
+            <i class="fas fa-route"></i>
+            <h5>Ingress Controller</h5>
+            <p>HTTP/HTTPS routing using domain names</p>
+          </div>
+          <div class="tech-item">
+           <div class="tech-image">
+              <img src="../assets/project/EKS-ConfigMaps-Secrets.jpg" alt="ConfigMaps & Secrets Diagram">
+            </div>
+            <i class="fas fa-key"></i>
+            <h5>ConfigMaps & Secrets</h5>
+            <p>Environment variables and credentials management</p>
+          </div>
+          <div class="tech-item">
+           <div class="tech-image">
+              <img src="../assets/project/EKS-Deployments.jpg" alt="PV Diagram">
+            </div>
+            <i class="fas fa-hdd"></i>
+            <h5>Persistent Volumes</h5>
+            <p>Data persistence across pod restarts</p>
+          </div>
+        </div>
+        
+        <!-- KUBERNETES DASHBOARD IMAGES -->
+        <div class="project-image-grid">
+          <div class="image-with-caption">
+            <img src="../assets/project/kubernetes-dashboard.png" alt="Kubernetes Dashboard">
+            <p>Kubernetes Dashboard showing running pods</p>
+          </div>
+          <div class="image-with-caption">
+            <img src="../assets/project/yaml-manifests.png" alt="Kubernetes Manifests">
+            <p>Kubernetes YAML configuration files</p>
+          </div>
+          <div class="image-with-caption">
+            <img src="../assets/project/ingress-config.png" alt="Ingress Configuration">
+            <p>Ingress controller configuration</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Monitoring & Reliability -->
+      <section class="project-section">
+        <h3><i class="fas fa-chart-line"></i> Monitoring & Reliability</h3>
+        
+        <!-- MONITORING DASHBOARD IMAGE -->
+        <div class="project-image">
+          <img src="../assets/project/prometheus-grafana-dashboard.png" alt="Monitoring Dashboard">
+          <p class="image-caption">Figure 2: Prometheus & Grafana monitoring dashboard for AgrowFarm cluster</p>
+        </div>
+        
+        <ul class="key-points">
+          <li>Integrated Prometheus and Alertmanager for cluster and application monitoring</li>
+          <li>Metrics collection enabled visibility into pod health, resource usage, and uptime</li>
+          <li>Alerts configured for proactive issue detection</li>
+          <li>Grafana dashboards for visualization of key metrics</li>
+          <li>Log aggregation using EFK (Elasticsearch, Fluentd, Kibana) stack</li>
+        </ul>
+        
+        <div class="outcome-metrics">
+          <div class="metric">
+            <span class="number">99.9%</span>
+            <span class="label">Uptime</span>
+          </div>
+          <div class="metric">
+            <span class="number">5 min</span>
+            <span class="label">MTTR</span>
+          </div>
+          <div class="metric">
+            <span class="number">Auto</span>
+            <span class="label">Scaling</span>
+          </div>
+          <div class="metric">
+            <span class="number">Zero</span>
+            <span class="label">Downtime Deployments</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CI/CD & Operations -->
+      <section class="project-section">
+        <h3><i class="fas fa-code-branch"></i> CI/CD & Operations</h3>
+        
+        <!-- CI/CD PIPELINE IMAGE -->
+        <div class="project-image">
+          <img src="../assets/project/cicd-pipeline.png" alt="CI/CD Pipeline">
+          <p class="image-caption">Figure 3: GitLab CI/CD pipeline for automated testing and deployment</p>
+        </div>
+        
+        <ul class="key-points">
+          <li>Kubernetes manifests version-controlled for declarative infrastructure management</li>
+          <li>Enabled smooth application updates using rolling deployments with minimal downtime</li>
+          <li>Improved operational efficiency by automating scaling and recovery using Kubernetes features</li>
+          <li>GitLab CI/CD pipeline for automated testing and deployment</li>
+          <li>Infrastructure as Code using Terraform for cloud resources</li>
+          <li>Blue-Green deployment strategy for risk-free releases</li>
+        </ul>
+      </section>
+
+      <!-- Outcomes & Learnings -->
+      <section class="project-section">
+        <h3><i class="fas fa-trophy"></i> Outcomes & Learnings</h3>
+        
+        <!-- APPLICATION SCREENSHOT -->
+        <div class="project-image">
+          <img src="../assets/project/agrowfarm-app.png" alt="AgrowFarm Application">
+          <p class="image-caption">Figure 4: AgrowFarm web application interface</p>
+        </div>
+        
+        <div class="architecture-diagram">
+          <h4>✅ Project Outcomes</h4>
+          <ul class="key-points">
+            <li>Successfully deployed a production-like Kubernetes environment</li>
+            <li>Improved application resilience and scalability</li>
+            <li>Reduced infrastructure management overhead by 60%</li>
+            <li>Enabled team to deploy features 3x faster</li>
+            <li>Cost optimization through efficient resource utilization</li>
+          </ul>
+        </div>
+        
+        <h4>📚 Key Learnings</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <i class="fas fa-sitemap"></i>
+            <h5>Kubernetes Networking</h5>
+            <p>Service discovery, ingress, and network policies</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-hdd"></i>
+            <h5>Storage Management</h5>
+            <p>PV, PVC, and storage classes</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-eye"></i>
+            <h5>Monitoring</h5>
+            <p>Prometheus metrics and alerting</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-globe"></i>
+            <h5>DNS Integration</h5>
+            <p>Domain routing and SSL management</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-bug"></i>
+            <h5>Troubleshooting</h5>
+            <p>Debugging real-world DevOps issues</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-shield-alt"></i>
+            <h5>Security</h5>
+            <p>RBAC, network policies, and secrets management</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technologies Used -->
+      <section class="project-section">
+        <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+        <div class="project-tags">
+          <span class="project-tag">Kubernetes</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">Helm</span>
+          <span class="project-tag">Prometheus</span>
+          <span class="project-tag">Grafana</span>
+          <span class="project-tag">Nginx Ingress</span>
+          <span class="project-tag">GitLab CI/CD</span>
+          <span class="project-tag">Terraform</span>
+          <span class="project-tag">AWS EKS</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">Redis</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">React</span>
+        </div>
+      </section>
+
+      <a href="../index.html#projects" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to All Projects
+      </a>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="container">
+        <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
+        <div class="social">
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank"><img src="../assets/facebook-icon.svg" alt="Facebook"/></a>
+          <a href="https://x.com/Prashansa_j11" target="_blank"><img src="../assets/twitter-icon.svg" alt="Twitter" /></a>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank"><img src="../assets/linkedin-icon.svg" alt="Linkedin"/></a>
+          <a href="https://github.com/prashansajoshi" target="_blank"><img src="../assets/github-icon.svg" alt="GitHub" /></a>
+        </div>
+        <p>Copyright &copy; Prashansa Joshi <span id="datee"></span>, All rights reserved</p>
+      </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+  </body>
+</html>

@@ -106,7 +106,7 @@ h2::selection {
 /* Project cards */
 .card {
   padding: 1rem;
-  background: var(--card-background);
+  /* background: var(--card-background); */
   color: #ffffff;
   border-radius: 5px;
   transition: 0.4s ease-in-out;
@@ -136,12 +136,12 @@ h2::selection {
 
 /* project 1 */
 .card:nth-child(1) {
-  background: url(../assets/project/project-one.png) center center/cover;
+  background: url(../assets/project/aws-cost-optimization-image.jpg) center center/cover;
 }
 
 /* Project 2 */
 .card:nth-child(2) {
-  background: url(../assets/project/project-two.png) center center/cover;
+  background: url(../assets/project/kubernetes-EKS.jpg) center center/cover;
 }
 
 /* Project 3 */
