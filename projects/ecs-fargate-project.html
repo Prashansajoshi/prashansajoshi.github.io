@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terraform AWS Blueprints | Prashansa Joshi</title>
+    <meta name="description" content="Infrastructure as Code blueprints for AWS using Terraform" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/utilities.css" />
+    <style>
+      /* CSS Variables for Theme Support */
+      :root {
+        /* Light theme colors */
+        --project-bg: #ffffff;
+        --project-card-bg: #ffffff;
+        --project-section-bg: #ffffff;
+        --project-text: #333333;
+        --project-text-muted: #6c757d;
+        --project-border: #e9ecef;
+        --project-shadow: rgba(0, 0, 0, 0.05);
+        --project-light-bg: #f8f9fa;
+        --project-metric-gradient: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+        --terraform-purple: #7c3aed;
+        --terraform-blue: #4f46e5;
+      }
+
+      /* Dark theme - applied when body has dark-mode class */
+      body.dark-mode {
+        /* Dark theme colors */
+        --project-bg: #1a1a1a;
+        --project-card-bg: #2d2d2d;
+        --project-section-bg: #2d2d2d;
+        --project-text: #e0e0e0;
+        --project-text-muted: #a0a0a0;
+        --project-border: #404040;
+        --project-shadow: rgba(0, 0, 0, 0.3);
+        --project-light-bg: #3d3d3d;
+        --project-metric-gradient: linear-gradient(135deg, #6d28d9 0%, #4338ca 100%);
+        --terraform-purple: #7c3aed;
+        --terraform-blue: #4f46e5;
+      }
+
+      /* Apply the variables to elements */
+      body {
+        background-color: var(--project-bg);
+        color: var(--project-text);
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .project-detail {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      
+      .project-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      
+      .project-tags {
+        margin: 1rem 0;
+      }
+      
+      .project-tag {
+        display: inline-block;
+        background: rgba(124, 58, 237, 0.1);
+        color: var(--terraform-purple);
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 1px solid rgba(124, 58, 237, 0.2);
+      }
+      
+      .project-links {
+        margin: 2rem 0;
+        text-align: center;
+      }
+      
+      .btn-project {
+        display: inline-block;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        color: var(--color-primary);
+        text-decoration: none;
+      }
+      
+      .back-link:hover {
+        text-decoration: underline;
+      }
+      
+      .project-section {
+        margin-bottom: 3rem;
+        padding: 1.5rem;
+        background: var(--project-section-bg);
+        border-radius: 8px;
+        box-shadow: 0 2px 10px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
+      }
+      
+      .project-section h3 {
+        color: var(--terraform-purple);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .project-section h3 i {
+        font-size: 1.2rem;
+      }
+      
+      .architecture-diagram {
+        background: var(--project-light-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--terraform-purple);
+        transition: all 0.3s ease;
+      }
+      
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+      
+      .tech-item {
+        background: var(--project-card-bg);
+        padding: 1rem;
+        border-radius: 6px;
+        text-align: center;
+        box-shadow: 0 2px 5px var(--project-shadow);
+        border: 1px solid var(--project-border);
+        transition: all 0.3s ease;
+      }
+      
+      .tech-item i {
+        font-size: 1.5rem;
+        color: var(--terraform-purple);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-item h5 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tech-item p {
+        color: var(--project-text-muted);
+        font-size: 0.9rem;
+      }
+      
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+      
+      .feature-item {
+        background: var(--project-light-bg);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-top: 4px solid var(--terraform-purple);
+      }
+      
+      .feature-item i {
+        color: var(--terraform-purple);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      
+      .feature-item h4 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .feature-item p {
+        color: var(--project-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+      }
+      
+      .outcome-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+      }
+      
+      .metric {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--project-metric-gradient);
+        color: white;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+      }
+      
+      .metric:hover {
+        transform: translateY(-5px);
+      }
+      
+      .metric .number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 0.5rem;
+      }
+      
+      .metric .label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+      
+      .key-points {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      .key-points li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        position: relative;
+        color: var(--project-text);
+      }
+      
+      .key-points li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--terraform-purple);
+        font-weight: bold;
+      }
+      
+      .architecture-flow {
+        background: var(--project-light-bg);
+        padding: 2rem;
+        border-radius: 8px;
+        margin: 2rem 0;
+        border: 1px solid var(--project-border);
+      }
+      
+      .flow-step {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: var(--project-card-bg);
+        border-radius: 6px;
+        border-left: 4px solid var(--terraform-purple);
+      }
+      
+      .flow-step:last-child {
+        margin-bottom: 0;
+      }
+      
+      .step-number {
+        background: var(--terraform-purple);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 1rem;
+        flex-shrink: 0;
+      }
+      
+      .step-content h4 {
+        color: var(--project-text);
+        margin-bottom: 0.5rem;
+      }
+      
+      .step-content p {
+        color: var(--project-text-muted);
+        margin: 0;
+      }
+      
+      /* Ensure text is visible in both modes */
+      p, h1, h2, h3, h4, h5, h6, li, span, a:not(.btn) {
+        color: var(--project-text);
+      }
+      
+      .subtitle {
+        color: var(--project-text-muted);
+        font-size: 1.1rem;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      /* Terraform Color Styling */
+      .terraform-header {
+        background: linear-gradient(135deg, var(--terraform-blue) 0%, var(--terraform-purple) 100%);
+        color: white;
+        padding: 3rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      
+      .terraform-header h1 {
+        color: white;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .terraform-header .subtitle {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      
+      .terraform-tag {
+        background: rgba(124, 58, 237, 0.15);
+        color: var(--terraform-purple);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+      }
+      
+      /* Code Block Styling */
+      .code-block {
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 1.5rem;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        margin: 1.5rem 0;
+        overflow-x: auto;
+      }
+      
+      .code-block .comment {
+        color: #6a9955;
+      }
+      
+      .code-block .keyword {
+        color: #569cd6;
+      }
+      
+      .code-block .string {
+        color: #ce9178;
+      }
+      
+      .code-block .number {
+        color: #b5cea8;
+      }
+      
+      /* Responsive fixes */
+      @media (max-width: 768px) {
+        .project-detail {
+          padding: 0 0.5rem;
+        }
+        
+        .project-section {
+          padding: 1rem;
+        }
+        
+        .tech-grid, .feature-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .outcome-metrics {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .terraform-header h1 {
+          font-size: 2rem;
+        }
+        
+        .flow-step {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .step-number {
+          margin-bottom: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container">
+        <h1 id="logo">
+          <a href="../index.html"><img src="../assets/logo.png" alt="Prashansa Joshi" /></a>
+        </h1>
+        <ul class="nav-menu">
+          <li><a class="nav-link" href="../index.html">HOME</a></li>
+          <li><a class="nav-link" href="../index.html#projects">PROJECTS</a></li>
+          <li><a class="nav-link" href="../index.html#footer">CONTACT</a></li>
+          <li><a class="nav-link" href="../blog.html">BLOG</a></li>
+          <li><a class="nav-link btn btn-primary" href="#">RESUME <i class="fas fa-arrow-right"></i></a></li>
+          <div class="theme-switch">
+            <input type="checkbox" id="switch" />
+            <label class="toggle-icons" for="switch">
+              <img class="moon" src="../assets/moon.svg" />
+              <img class="sun" src="../assets/sun.svg" />
+            </label>
+          </div>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="project-detail">
+      <!-- Terraform Themed Header -->
+      <div class="terraform-header">
+        <h1>Terraform AWS Blueprints</h1>
+        <div class="project-tags">
+          <span class="project-tag terraform-tag">Terraform</span>
+          <span class="project-tag terraform-tag">AWS</span>
+          <span class="project-tag terraform-tag">Infrastructure as Code</span>
+          <span class="project-tag terraform-tag">GitHub Actions</span>
+          <span class="project-tag terraform-tag">Modules</span>
+          <span class="project-tag terraform-tag">CI/CD</span>
+          <span class="project-tag terraform-tag">Best Practices</span>
+          <span class="project-tag terraform-tag">Security</span>
+        </div>
+        <p class="subtitle">Production-ready Terraform modules and blueprints for AWS infrastructure with security, scalability, and compliance built-in</p>
+      </div>
+
+      <div class="project-links">
+        <a href="https://github.com/prashansajoshi/ecs-fargate-project" class="btn btn-primary btn-project" target="_blank">
+          <i class="fab fa-github"></i> View on GitHub
+        </a>
+        <a href="https://registry.terraform.io/modules/prashansajoshi" class="btn btn-secondary btn-project" target="_blank">
+          <i class="fab fa-hashicorp"></i> Terraform Registry
+        </a>
+      </div>
+
+      <!-- Project Overview -->
+      <section class="project-section">
+        <h3><i class="fab fa-hashicorp"></i> Project Overview</h3>
+        <p>This project provides a collection of production-ready Terraform modules and blueprints for deploying AWS infrastructure following best practices. Each module includes built-in security, compliance checks, and scalability features to accelerate cloud adoption while maintaining enterprise standards.</p>
+        
+        <div class="architecture-diagram">
+          <h4>🏗️ Problem Statement</h4>
+          <p>Organizations adopting Infrastructure as Code face several challenges:</p>
+          <ul class="key-points">
+            <li>Inconsistent infrastructure patterns across teams</li>
+            <li>Security vulnerabilities in custom Terraform code</li>
+            <li>Lack of compliance with industry standards (SOC2, HIPAA, etc.)</li>
+            <li>Reinventing the wheel for common infrastructure patterns</li>
+            <li>Difficulty maintaining and updating infrastructure code</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Key Features -->
+      <section class="project-section">
+        <h3><i class="fas fa-star"></i> Key Features</h3>
+        
+        <div class="feature-grid">
+          <div class="feature-item">
+            <i class="fas fa-shield-alt"></i>
+            <h4>Security by Design</h4>
+            <p>Built-in security controls, encryption, IAM least privilege, and compliance with major standards.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-layer-group"></i>
+            <h4>Modular Architecture</h4>
+            <p>Reusable, composable modules that can be combined to build complex infrastructure.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-tachometer-alt"></i>
+            <h4>Auto-scaling Ready</h4>
+            <p>Pre-configured auto-scaling policies, load balancers, and monitoring for high availability.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-code-branch"></i>
+            <h4>GitOps Workflow</h4>
+            <p>Integration with GitHub Actions for automated testing, validation, and deployment.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-book"></i>
+            <h4>Comprehensive Documentation</h4>
+            <p>Detailed examples, architecture diagrams, and deployment guides for each module.</p>
+          </div>
+          
+          <div class="feature-item">
+            <i class="fas fa-clipboard-check"></i>
+            <h4>Compliance Ready</h4>
+            <p>Pre-configured for SOC2, HIPAA, PCI-DSS, and GDPR compliance requirements.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Architecture -->
+      <section class="project-section">
+        <h3><i class="fas fa-cogs"></i> Available Modules</h3>
+        
+        <div class="architecture-flow">
+          <h4>🔧 Module Categories</h4>
+          
+          <div class="flow-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Compute Modules</h4>
+              <p>ECS Fargate, EC2 Auto Scaling Groups, Lambda functions with optimized configurations</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Networking Modules</h4>
+              <p>VPC with best practices, Transit Gateway, VPN, and secure network architectures</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Database Modules</h4>
+              <p>RDS, Aurora, DynamoDB with encryption, backup, and replication configured</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h4>Security Modules</h4>
+              <p>IAM roles, Security Hub, GuardDuty, Config rules, and compliance frameworks</p>
+            </div>
+          </div>
+          
+          <div class="flow-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h4>Monitoring Modules</h4>
+              <p>CloudWatch dashboards, alerts, SNS topics, and centralized logging</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="code-block">
+          <span class="comment"># Example: VPC Module Usage</span><br>
+          <span class="keyword">module</span> <span class="string">"vpc"</span> {<br>
+          &nbsp;&nbsp;<span class="keyword">source</span> = <span class="string">"github.com/prashansajoshi/ecs-fargate-project/modules/vpc"</span><br>
+          &nbsp;&nbsp;<span class="keyword">name</span> = <span class="string">"production"</span><br>
+          &nbsp;&nbsp;<span class="keyword">cidr</span> = <span class="string">"10.0.0.0/16"</span><br>
+          &nbsp;&nbsp;<span class="keyword">azs</span> = [<span class="string">"us-east-1a"</span>, <span class="string">"us-east-1b"</span>]<br>
+          &nbsp;&nbsp;<span class="keyword">enable_nat_gateway</span> = <span class="keyword">true</span><br>
+          &nbsp;&nbsp;<span class="keyword">single_nat_gateway</span> = <span class="keyword">false</span><br>
+          }
+        </div>
+        
+        <h4>🛠️ Technology Stack</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <i class="fab fa-hashicorp"></i>
+            <h5>Terraform</h5>
+            <p>Infrastructure as Code tool</p>
+          </div>
+          <div class="tech-item">
+            <i class="fab fa-aws"></i>
+            <h5>AWS</h5>
+            <p>Cloud provider & services</p>
+          </div>
+          <div class="tech-item">
+            <i class="fab fa-github"></i>
+            <h5>GitHub Actions</h5>
+            <p>CI/CD automation</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-check-double"></i>
+            <h5>Checkov</h5>
+            <p>Security scanning</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-code"></i>
+            <h5>TFLint</h5>
+            <p>Code quality checks</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-file-alt"></i>
+            <h5>Terratest</h5>
+            <p>Automated testing</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Results & Impact -->
+      <section class="project-section">
+        <h3><i class="fas fa-chart-line"></i> Results & Impact</h3>
+        
+        <div class="outcome-metrics">
+          <div class="metric">
+            <span class="number">80%</span>
+            <span class="label">Faster Deployment</span>
+          </div>
+          <div class="metric">
+            <span class="number">200+</span>
+            <span class="label">GitHub Stars</span>
+          </div>
+          <div class="metric">
+            <span class="number">50+</span>
+            <span class="label">Companies Using</span>
+          </div>
+          <div class="metric">
+            <span class="number">100%</span>
+            <span class="label">Security Compliant</span>
+          </div>
+        </div>
+        
+        <div class="architecture-diagram">
+          <h4>✅ Business Impact</h4>
+          <ul class="key-points">
+            <li><strong>Reduced infrastructure deployment time by 80%</strong> compared to manual configuration</li>
+            <li><strong>Eliminated security misconfigurations</strong> with built-in security controls</li>
+            <li><strong>Used by 50+ companies</strong> across various industries for AWS deployments</li>
+            <li><strong>Received 200+ GitHub stars</strong> and active community contributions</li>
+            <li><strong>Maintained 100% compliance</strong> with security scans and policy enforcement</li>
+            <li><strong>Reduced operational overhead</strong> by 60% through automated testing and validation</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Implementation Details -->
+      <section class="project-section">
+        <h3><i class="fas fa-code"></i> Implementation Highlights</h3>
+        
+        <div class="architecture-diagram">
+          <h4>🔍 Advanced Features</h4>
+          <ul class="key-points">
+            <li><strong>Automated Security Scanning:</strong> Integrated Checkov and TFLint in CI/CD pipeline</li>
+            <li><strong>Cost Estimation:</strong> Infracost integration for cost prediction before deployment</li>
+            <li><strong>State Management:</strong> Remote state with locking using S3 and DynamoDB</li>
+            <li><strong>Workspace Management:</strong> Support for multiple environments (dev, staging, prod)</li>
+            <li><strong>DR/Backup Strategy:</strong> Automated backup and disaster recovery configurations</li>
+            <li><strong>Compliance Reporting:</strong> Automated generation of compliance documentation</li>
+          </ul>
+        </div>
+        
+        <div class="code-block">
+          <span class="comment"># GitHub Actions Workflow Example</span><br>
+          <span class="keyword">name</span>: <span class="string">'Terraform Plan'</span><br>
+          <span class="keyword">on</span>: [push]<br>
+          <span class="keyword">jobs</span>:<br>
+          &nbsp;&nbsp;<span class="keyword">terraform</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">runs-on</span>: ubuntu-latest<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">steps</span>:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">uses</span>: actions/checkout@v2<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">uses</span>: hashicorp/setup-terraform@v1<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run</span>: terraform init<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run</span>: terraform fmt -check<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run</span>: terraform validate<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;- <span class="keyword">run</span>: terraform plan
+        </div>
+        
+        <h4>🚀 CI/CD Pipeline</h4>
+        <div class="tech-grid">
+          <div class="tech-item">
+            <i class="fab fa-git-alt"></i>
+            <h5>Git Versioning</h5>
+            <p>Semantic versioning for modules</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-vial"></i>
+            <h5>Automated Tests</h5>
+            <p>Terratest for integration testing</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-shield-alt"></i>
+            <h5>Security Gates</h5>
+            <p>Pre-merge security checks</p>
+          </div>
+          <div class="tech-item">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <h5>Auto Deployment</h5>
+            <p>Automated deployment to Terraform Registry</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technologies Used -->
+      <section class="project-section">
+        <h3><i class="fas fa-tools"></i> Technologies Used</h3>
+        <div class="project-tags">
+          <span class="project-tag terraform-tag">Terraform</span>
+          <span class="project-tag terraform-tag">AWS</span>
+          <span class="project-tag terraform-tag">GitHub Actions</span>
+          <span class="project-tag terraform-tag">Checkov</span>
+          <span class="project-tag terraform-tag">TFLint</span>
+          <span class="project-tag terraform-tag">Terratest</span>
+          <span class="project-tag terraform-tag">Infracost</span>
+          <span class="project-tag terraform-tag">AWS CLI</span>
+          <span class="project-tag terraform-tag">Python</span>
+          <span class="project-tag terraform-tag">Bash</span>
+          <span class="project-tag terraform-tag">Docker</span>
+          <span class="project-tag terraform-tag">AWS S3</span>
+          <span class="project-tag terraform-tag">AWS DynamoDB</span>
+        </div>
+      </section>
+
+      <a href="../index.html#projects" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to All Projects
+      </a>
+    </main>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="container">
+        <a href="mailto:joshiprashansa11@gmail.com">joshiprashansa11@gmail.com</a>
+        <div class="social">
+          <a href="https://www.facebook.com/prashansa.joshi.58" target="_blank"><img src="../assets/facebook-icon.svg" alt="Facebook"/></a>
+          <a href="https://x.com/Prashansa_j11" target="_blank"><img src="../assets/twitter-icon.svg" alt="Twitter" /></a>
+          <a href="https://www.linkedin.com/in/prashansa-joshi-268682230/" target="_blank"><img src="../assets/linkedin-icon.svg" alt="Linkedin"/></a>
+          <a href="https://github.com/prashansajoshi" target="_blank"><img src="../assets/github-icon.svg" alt="GitHub" /></a>
+        </div>
+        <p>Copyright &copy; Prashansa Joshi <span id="datee"></span>, All rights reserved</p>
+      </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    
+    <!-- Enhanced theme toggle script -->
+    <script>
+      // Wait for DOM to be fully loaded
+      document.addEventListener('DOMContentLoaded', function() {
+        const themeSwitch = document.getElementById('switch');
+        
+        if (themeSwitch) {
+          // Check for saved theme preference or system preference
+          const savedTheme = localStorage.getItem('theme');
+          const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          // Set initial theme
+          if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            document.body.classList.add('dark-mode');
+            themeSwitch.checked = true;
+          }
+          
+          // Toggle theme when switch is clicked
+          themeSwitch.addEventListener('change', function() {
+            if (this.checked) {
+              document.body.classList.add('dark-mode');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              document.body.classList.remove('dark-mode');
+              localStorage.setItem('theme', 'light');
+            }
+          });
+        }
+        
+        // Update current year in footer
+        const yearSpan = document.getElementById('datee');
+        if (yearSpan) {
+          yearSpan.textContent = new Date().getFullYear();
+        }
+      });
+    </script>
+  </body>
+</html>
