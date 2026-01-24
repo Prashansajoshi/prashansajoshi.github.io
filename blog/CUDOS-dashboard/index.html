@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUDOS Dashboard - Blog</title>
+    <title>CUDOS Dashboard - AWS Cost Intelligence Solution</title>
+    <meta name="description" content="Comprehensive guide to deploying and using AWS CUDOS Dashboard for cost optimization, usage analytics, and cloud financial management.">
     <style>
         /* Dark Theme */
         body {
@@ -14,6 +15,80 @@
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
+        }
+        
+        /* Navigation */
+        header nav {
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        header nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        
+        header nav a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Hero Section */
+        .hero {
+            position: relative;
+            margin: 2em 0 3em 0;
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+        }
+        
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 3em;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+        }
+        
+        .hero h1 {
+            font-size: 3em;
+            color: white;
+            margin: 0 0 0.5em 0;
+            border: none;
+            padding: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .hero .blog-meta {
+            color: #c9d1d9;
+            font-size: 1.1em;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        
+        .hero .blog-meta time {
+            background: rgba(88, 166, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
         }
         
         /* Typography */
@@ -120,10 +195,42 @@
         
         /* Blockquotes */
         blockquote {
-            border-left: 4px solid #30363d;
+            border-left: 4px solid #1f6feb;
+            margin: 2em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(31, 111, 235, 0.1);
+            color: #a5d6ff;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        blockquote p {
+            margin: 0;
+        }
+        
+        /* Note boxes */
+        .note {
+            border-left: 4px solid #58a6ff;
             margin: 1.5em 0;
-            padding: 0 1em;
-            color: #8b949e;
+            padding: 1em 1.5em;
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+        }
+        
+        .note strong {
+            color: #58a6ff;
+        }
+        
+        /* Warning boxes */
+        .warning {
+            border-left: 4px solid #ffa657;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(255, 166, 87, 0.1);
+            color: #ffd7a5;
+        }
+        
+        .warning strong {
+            color: #ffa657;
         }
         
         /* Tables */
@@ -171,21 +278,12 @@
             break-inside: avoid;
         }
         
-        /* Header info */
-        .blog-meta {
-            color: #8b949e;
-            font-size: 0.9em;
-            margin-bottom: 2em;
-            padding-bottom: 1em;
-            border-bottom: 1px solid #30363d;
-        }
-        
         /* Back button */
         .back-button {
             display: inline-block;
             background-color: #238636;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 6px;
             margin: 2em 0;
             font-weight: 500;
@@ -197,10 +295,30 @@
             text-decoration: none;
         }
         
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #30363d, transparent);
+            margin: 3em 0;
+        }
+        
         /* Responsive */
         @media (max-width: 768px) {
             body {
                 padding: 15px;
+            }
+            
+            .hero {
+                min-height: 300px;
+                margin: 1em 0 2em 0;
+            }
+            
+            .hero-content {
+                padding: 2em;
+            }
+            
+            .hero h1 {
+                font-size: 2.2em;
             }
             
             .toc ul {
@@ -213,6 +331,20 @@
             
             h2 {
                 font-size: 1.5em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                min-height: 250px;
+            }
+            
+            .hero-content {
+                padding: 1.5em;
+            }
+            
+            .hero h1 {
+                font-size: 1.8em;
             }
         }
     </style>
@@ -228,14 +360,22 @@
 
     <main>
         <article>
-            <h1>CUDOS Dashboard</h1>
-            
-            <div class="blog-meta">
-                <time datetime="2025-11-09">Nov 9, 2025</time>
+            <!-- Hero Section -->
+            <div class="hero">
+                <!-- Replace this image URL with your actual hero image -->
+                <img src="images/hero.jpeg" 
+                     alt="AWS Cloud Cost Management Dashboard" 
+                     class="hero-image">
+                <div class="hero-content">
+                    <h1>CUDOS Dashboard: AWS Cost Intelligence Solution</h1>
+                    <div class="blog-meta">
+                        <time datetime="2025-11-09">📅 Nov 9, 2025</time>
+                    </div>
+                </div>
             </div>
             
             <div class="toc">
-                <h3>Contents</h3>
+                <h3>📋 Table of Contents</h3>
                 <ul>
                     <li><a href="#introduction">Introduction to CUDOS</a></li>
                     <li><a href="#prerequisites">Prerequisites</a></li>
@@ -249,6 +389,8 @@
                     <li><a href="#conclusion">Conclusion</a></li>
                 </ul>
             </div>
+            
+            <div class="divider"></div>
             
             <p>In today's cloud landscape, managing AWS costs is key to efficiency and cutting waste. The CUDOS Dashboard (Cost and Usage Dashboard Operations Solution) is an open-source tool in AWS Cloud Intelligence Dashboards. It uses AWS Cost and Usage Reports (CUR) to offer detailed insights, recommendations, and visuals to optimize costs. This blog guides you through deploying CUDOS, its architecture, core services, and customizing it with user-defined tags, based on practical use and official AWS resources.</p>
 
@@ -473,12 +615,15 @@ GROUP BY 1, 2, 3, ..., team</code></pre>
             <p>Organizations using CUDOS often achieve 15-25% cost savings through insights.</p>
 
             <h2 id="conclusion">Conclusion</h2>
+            <div class="note">
+                <strong>Key Takeaway:</strong> CUDOS Dashboard transforms AWS cost management from reactive to proactive, providing the visibility and intelligence needed to optimize cloud spending effectively.
+            </div>
             <p>Implementing CUDOS provides a robust tool for AWS cost management. From deployment with Terraform to custom tagging, this guide covers the essentials to start. Beyond visibility, CUDOS converts raw CUR data into actionable intelligence, offering ML-powered savings recommendations, resource-level insights, and accurate forecasting.</p>
         </article>
     </main>
 
     <footer>
-        <a href="../../blog.html" class="back-button">← Back to blogs</a>
+        <a href="../../blog.html" class="back-button">← Back to all blogs</a>
     </footer>
 
     <!-- Prism.js Syntax Highlighting -->
