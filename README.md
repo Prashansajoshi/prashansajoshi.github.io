@@ -116,7 +116,7 @@ The logo of this template is controlled by this line in the `index.html` markup,
    <li><a class="nav-link" href="#">PROJECTS</a></li>
    <li><a class="nav-link" href="#">CONTACT</a></li>
    <li><a class="nav-link" href="#">BlOG</a></li>
-   <li><a class="nav-link btn btn-primary" href="#">RESUME <i class="fas fa-arrow-right"></i></a>
+   <li><a class="nav-link btn btn-primary" href="assetsprashansajoshi_CV.pdf">RESUME <i class="fas fa-arrow-right"></i></a>
    </li>     
 </ul>
 ```
