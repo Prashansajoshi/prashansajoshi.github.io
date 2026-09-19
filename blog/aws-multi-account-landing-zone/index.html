@@ -1,0 +1,1381 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Learn how to build a secure multi-account AWS landing zone using AWS Organizations, Organizational Units, Service Control Policies, centralized logging, cross-account IAM roles, and Terraform.">
+
+    <meta name="keywords" content="AWS Landing Zone, AWS Organizations, Terraform, AWS Multi Account, SCP, AWS DevOps, Cloud Security, AWS Infrastructure">
+
+    <meta name="author" content="Prashansa Joshi">
+
+    <title>Building a Secure Multi-Account AWS Landing Zone with Terraform</title>
+
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: black;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        header nav {
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+
+        header nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            margin: 2em 0 3em 0;
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+        }
+
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 3em;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            color: white;
+            margin: 0 0 0.5em 0;
+            border: none;
+            padding: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero .blog-meta {
+            color: #c9d1d9;
+            font-size: 1.1em;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .hero .blog-meta time {
+            background: rgba(88, 166, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 2em;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.5em;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #58a6ff;
+            border-bottom: 2px solid #1f6feb;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #79c0ff;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #a5d6ff;
+        }
+
+        /* Links */
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+
+        /* Code Blocks */
+        pre, code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            line-height: 1.45;
+        }
+
+        code {
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+            color: #e6edf3;
+        }
+
+        pre code {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        /* Inline code */
+        :not(pre) > code {
+            color: #ff7b72;
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+
+        li {
+            margin: 0.5em 0;
+        }
+
+        li strong {
+            color: #ffa657;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #1f6feb;
+            margin: 2em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(31, 111, 235, 0.1);
+            color: #a5d6ff;
+            border-radius: 0 6px 6px 0;
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        /* Note boxes */
+        .note {
+            border-left: 4px solid #58a6ff;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+        }
+
+        .note strong {
+            color: #58a6ff;
+        }
+
+        /* Warning boxes */
+        .warning {
+            border-left: 4px solid #ffa657;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(255, 166, 87, 0.1);
+            color: #ffd7a5;
+        }
+
+        .warning strong {
+            color: #ffa657;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+
+        th, td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #161b22;
+            color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(22, 27, 34, 0.5);
+        }
+
+        /* Table of Contents */
+        .toc {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2em 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ul {
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .toc li {
+            break-inside: avoid;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #238636;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin: 2em 0;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: #2ea043;
+            text-decoration: none;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #30363d, transparent);
+            margin: 3em 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .hero {
+                min-height: 300px;
+                margin: 1em 0 2em 0;
+            }
+
+            .hero-content {
+                padding: 2em;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .toc ul {
+                columns: 1;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                min-height: 250px;
+            }
+
+            .hero-content {
+                padding: 1.5em;
+            }
+
+            .hero h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="../../index.html">🏠 Home</a> |
+            <a href="../../blog.html">📚 All Blogs</a>
+        </nav>
+    </header>
+
+    <main>
+        <article>
+
+            <!-- Hero Section -->
+            <div class="hero">
+
+                <!-- Place your architecture image at:
+                     blog/aws-multi-account-landing-zone/images/main.jpeg
+                -->
+                <img src="images/IMG1.jpg"
+                     alt="AWS multi-account landing zone architecture"
+                     class="hero-image">
+
+                <div class="hero-content">
+
+                    <h1>
+                        Building a Secure Multi-Account AWS Landing Zone with Terraform
+                    </h1>
+
+                    <div class="blog-meta">
+                        <time datetime="2026-09-19">
+                            📅 Sep 19, 2026
+                        </time>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Table of Contents -->
+            <div class="toc">
+
+                <h3>📋 Table of Contents</h3>
+
+                <ul>
+                    <li><a href="#introduction">Why a Landing Zone?</a></li>
+                    <li><a href="#multiple-accounts">Why Multiple AWS Accounts?</a></li>
+                    <li><a href="#account-structure">The Account Structure</a></li>
+                    <li><a href="#terraform-structure">Terraform Project Structure</a></li>
+                    <li><a href="#organization">Step 1 — Create the Organization and OUs</a></li>
+                    <li><a href="#accounts">Step 2 — Provision Member Accounts</a></li>
+                    <li><a href="#guardrails">Step 3 — Guardrails with SCPs</a></li>
+                    <li><a href="#logging">Step 4 — Centralized Logging</a></li>
+                    <li><a href="#cross-account">Step 5 — Cross-Account Terraform Access</a></li>
+                    <li><a href="#state">Step 6 — Isolated Remote State</a></li>
+                    <li><a href="#pitfalls">Common Pitfalls</a></li>
+                    <li><a href="#next">Where This Goes Next</a></li>
+                    <li><a href="#conclusion">Final Takeaway</a></li>
+                </ul>
+
+            </div>
+
+
+            <!-- Introduction -->
+
+            <h2 id="introduction">
+                Why a Landing Zone?
+            </h2>
+
+            <p>
+                A single AWS account with a handful of EC2 instances works fine —
+                until a second team, a second environment, or a compliance requirement
+                shows up.
+            </p>
+
+            <p>
+                At that point, a single account can start working against the
+                organization running it: one blast radius, one IAM namespace,
+                one bill, and one set of guardrails trying to serve development,
+                staging, and production all at once.
+            </p>
+
+            <p>
+                A <strong>landing zone</strong> is the baseline multi-account
+                structure that everything else gets built on top of. It provides
+                the foundation for accounts, organizational units, guardrails,
+                centralized logging, and identity.
+            </p>
+
+            <p>
+                AWS provides a managed landing-zone implementation through
+                <strong>AWS Control Tower</strong>. However, a solid and auditable
+                landing zone can also be built directly using
+                <strong>AWS Organizations and Terraform</strong>.
+            </p>
+
+            <p>
+                Understanding how to build these components yourself also makes
+                it much easier to understand what managed solutions such as
+                Control Tower are doing behind the scenes.
+            </p>
+
+            <blockquote>
+                <p>
+                    A landing zone is not just a collection of AWS accounts.
+                    It is the foundation for how those accounts are governed,
+                    secured, monitored, and managed.
+                </p>
+            </blockquote>
+
+            <!-- Landing Zone Architecture Diagram -->
+            <div class="architecture-image">
+                <img src="images/architecture-diagram.png"
+                    alt="AWS multi-account landing zone architecture diagram">
+
+                <p class="image-caption">
+                    AWS multi-account landing zone architecture showing organizational units,
+                    security, centralized logging, shared services, and workload accounts.
+                </p>
+            </div>
+
+            <div class="divider"></div>
+
+
+            <div class="divider"></div>
+
+
+            <!-- Multiple Accounts -->
+
+            <h2 id="multiple-accounts">
+                Why Multiple Accounts Instead of One Account with Tags?
+            </h2>
+
+            <p>
+                Tags and IAM policies can provide a level of logical separation
+                inside a single AWS account. Separate AWS accounts provide a
+                much stronger isolation boundary.
+            </p>
+
+            <ul>
+
+                <li>
+                    <strong>Blast radius:</strong>
+                    A misconfigured security group or leaked credential in
+                    development is isolated from production unless an explicit
+                    cross-account access path has been created.
+                </li>
+
+                <li>
+                    <strong>Billing clarity:</strong>
+                    Costs can be separated by account without relying entirely
+                    on tagging discipline.
+                </li>
+
+                <li>
+                    <strong>Service quotas:</strong>
+                    Many AWS service quotas are scoped at the account level,
+                    which helps prevent one environment from consuming resources
+                    needed by another.
+                </li>
+
+                <li>
+                    <strong>Compliance boundaries:</strong>
+                    Account boundaries provide a clear organizational boundary
+                    that can be easier to reason about during security and
+                    compliance reviews.
+                </li>
+
+                <li>
+                    <strong>Guardrails:</strong>
+                    Service Control Policies can be attached at the
+                    Organizational Unit level so that accounts inherit the
+                    same organizational restrictions.
+                </li>
+
+            </ul>
+
+            <div class="note">
+
+                <strong>The trade-off is operational complexity.</strong>
+
+                Cross-account networking, identity, CI/CD, monitoring, and
+                infrastructure management become more involved. A landing
+                zone provides the structure needed to manage that complexity.
+
+            </div>
+
+
+            <!-- Account Structure -->
+
+            <h2 id="account-structure">
+                The Account Structure
+            </h2>
+
+            <p>
+                A minimal production-oriented AWS organization can separate
+                accounts according to their responsibilities.
+            </p>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Account / Group</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td><strong>Management</strong></td>
+                        <td>
+                            Root of the AWS Organization. Owns Organizations,
+                            SCPs, and billing. Application workloads should
+                            not run here.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Security / Audit</strong></td>
+                        <td>
+                            Central security services and organization-wide
+                            security visibility.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Log Archive</strong></td>
+                        <td>
+                            Central destination for CloudTrail and configuration
+                            logs from member accounts.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Shared Services</strong></td>
+                        <td>
+                            Shared networking, CI/CD infrastructure, internal
+                            tooling, artifact repositories, VPNs, and similar
+                            services.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Workloads</strong></td>
+                        <td>
+                            Application environments such as development,
+                            staging, and production.
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Sandbox</strong></td>
+                        <td>
+                            Disposable environments for experimentation
+                            and testing.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            <p>
+                These accounts can be organized using
+                <strong>Organizational Units (OUs)</strong>. OUs allow
+                policies and guardrails to be applied to groups of accounts
+                instead of configuring every account individually.
+            </p>
+
+
+            <!-- Terraform Structure -->
+
+            <h2 id="terraform-structure">
+                Terraform Project Structure
+            </h2>
+
+            <p>
+                One common mistake is putting the entire AWS organization and
+                every workload environment into one Terraform state file.
+            </p>
+
+            <p>
+                That creates unnecessary coupling. A change intended for
+                development could interact with infrastructure belonging to
+                production, and a single state lock can block unrelated work.
+            </p>
+
+            <p>
+                Instead, the organization layer and individual account
+                environments should have separate state.
+            </p>
+
+            <pre><code>landing-zone/
+├── org/
+│   ├── main.tf
+│   ├── accounts.tf
+│   ├── scps.tf
+│   ├── backend.tf
+│   └── variables.tf
+│
+├── modules/
+│   ├── account-baseline/
+│   ├── cross-account-role/
+│   └── centralized-logging/
+│
+├── environments/
+│   ├── security/
+│   │   ├── main.tf
+│   │   └── backend.tf
+│   │
+│   ├── log-archive/
+│   │   ├── main.tf
+│   │   └── backend.tf
+│   │
+│   ├── shared-services/
+│   │   ├── main.tf
+│   │   └── backend.tf
+│   │
+│   ├── dev/
+│   │   ├── main.tf
+│   │   └── backend.tf
+│   │
+│   ├── staging/
+│   │   ├── main.tf
+│   │   └── backend.tf
+│   │
+│   └── prod/
+│       ├── main.tf
+│       └── backend.tf
+│
+└── README.md</code></pre>
+
+            <p>
+                The <code>org/</code> directory runs against the Management
+                account and manages the organization itself.
+            </p>
+
+            <p>
+                The individual directories under
+                <code>environments/</code> use credentials that assume
+                roles into their respective AWS accounts.
+            </p>
+
+            <div class="note">
+
+                <strong>The important principle:</strong>
+
+                Terraform state should not cross account boundaries
+                unnecessarily. Each environment should have an independent
+                state and lifecycle.
+
+            </div>
+
+
+            <!-- Step 1 -->
+
+            <h2 id="organization">
+                Step 1 — Create the Organization and OUs
+            </h2>
+
+            <p>
+                The first layer is the AWS Organization itself. This code
+                runs from the Management account.
+            </p>
+
+            <p>
+                AWS Organizations is a global service, but the AWS provider
+                still requires a region to be configured.
+            </p>
+
+            <pre><code># org/main.tf
+
+terraform {
+  required_version = "&gt;= 1.7"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~&gt; 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_organizations_organization" "root" {
+  aws_service_access_principals = [
+    "cloudtrail.amazonaws.com",
+    "config.amazonaws.com",
+    "guardduty.amazonaws.com",
+    "sso.amazonaws.com",
+  ]
+
+  feature_set = "ALL"
+}
+
+resource "aws_organizations_organizational_unit" "security" {
+  name      = "Security"
+  parent_id = aws_organizations_organization.root.roots[0].id
+}
+
+resource "aws_organizations_organizational_unit" "infrastructure" {
+  name      = "Infrastructure"
+  parent_id = aws_organizations_organization.root.roots[0].id
+}
+
+resource "aws_organizations_organizational_unit" "workloads" {
+  name      = "Workloads"
+  parent_id = aws_organizations_organization.root.roots[0].id
+}
+
+resource "aws_organizations_organizational_unit" "sandbox" {
+  name      = "Sandbox"
+  parent_id = aws_organizations_organization.root.roots[0].id
+}</code></pre>
+
+            <p>
+                This creates four OUs beneath the organization's root:
+                <strong>Security, Infrastructure, Workloads, and Sandbox.</strong>
+            </p>
+
+
+            <!-- Step 2 -->
+
+            <h2 id="accounts">
+                Step 2 — Provision Member Accounts
+            </h2>
+
+            <p>
+                Once the organizational structure exists, Terraform can
+                create the member accounts and place them directly into
+                their intended OUs.
+            </p>
+
+            <pre><code># org/accounts.tf
+
+locals {
+  workload_accounts = {
+    dev     = "aws+dev@yourcompany.com"
+    staging = "aws+staging@yourcompany.com"
+    prod    = "aws+prod@yourcompany.com"
+  }
+}
+
+resource "aws_organizations_account" "security" {
+  name      = "security-audit"
+  email     = "aws+security@yourcompany.com"
+  parent_id = aws_organizations_organizational_unit.security.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_organizations_account" "log_archive" {
+  name      = "log-archive"
+  email     = "aws+logs@yourcompany.com"
+  parent_id = aws_organizations_organizational_unit.infrastructure.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_organizations_account" "shared_services" {
+  name      = "shared-services"
+  email     = "aws+shared@yourcompany.com"
+  parent_id = aws_organizations_organizational_unit.infrastructure.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "aws_organizations_account" "workloads" {
+  for_each  = local.workload_accounts
+  name      = "workload-${each.key}"
+  email     = each.value
+  parent_id = aws_organizations_organizational_unit.workloads.id
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}</code></pre>
+
+            <div class="warning">
+
+                <strong>Protect account resources.</strong>
+
+                AWS accounts are long-lived organizational resources.
+                Using <code>prevent_destroy = true</code> helps prevent an
+                accidental Terraform operation from attempting to remove
+                these accounts.
+
+            </div>
+
+            <p>
+                Newly created member accounts also receive an
+                <code>OrganizationAccountAccessRole</code>, which can be
+                used by the Management account to bootstrap resources in
+                the member account.
+            </p>
+
+
+            <!-- Step 3 -->
+
+            <h2 id="guardrails">
+                Step 3 — Guardrails with Service Control Policies
+            </h2>
+
+            <p>
+                <strong>Service Control Policies (SCPs)</strong> are one of
+                the most important components of an AWS multi-account
+                architecture.
+            </p>
+
+            <p>
+                An SCP does not grant permissions. Instead, it establishes
+                the maximum available permission boundary for accounts,
+                users, and roles underneath it.
+            </p>
+
+            <blockquote>
+                <p>
+                    Think of an SCP as a ceiling on permissions rather than
+                    a permission grant.
+                </p>
+            </blockquote>
+
+            <h3>Deny Leaving the Organization</h3>
+
+            <pre><code>resource "aws_organizations_policy" "deny_leave_org" {
+  name = "deny-leave-organization"
+  type = "SERVICE_CONTROL_POLICY"
+
+  content = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [{
+      Sid      = "DenyLeaveOrganization"
+      Effect   = "Deny"
+      Action   = "organizations:LeaveOrganization"
+      Resource = "*"
+    }]
+  })
+}</code></pre>
+
+
+            <h3>Prevent CloudTrail Tampering</h3>
+
+            <pre><code>resource "aws_organizations_policy" "deny_disable_cloudtrail" {
+  name = "deny-disable-cloudtrail"
+  type = "SERVICE_CONTROL_POLICY"
+
+  content = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [{
+      Sid    = "DenyCloudTrailTampering"
+      Effect = "Deny"
+
+      Action = [
+        "cloudtrail:StopLogging",
+        "cloudtrail:DeleteTrail",
+        "cloudtrail:UpdateTrail",
+      ]
+
+      Resource = "*"
+    }]
+  })
+}</code></pre>
+
+
+            <h3>Restrict AWS Regions</h3>
+
+            <pre><code>resource "aws_organizations_policy" "deny_region_lockdown" {
+  name = "deny-non-approved-regions"
+  type = "SERVICE_CONTROL_POLICY"
+
+  content = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [{
+      Sid       = "DenyOutsideApprovedRegions"
+      Effect    = "Deny"
+
+      NotAction = [
+        "iam:*",
+        "organizations:*",
+        "route53:*",
+        "support:*",
+        "cloudfront:*"
+      ]
+
+      Resource = "*"
+
+      Condition = {
+        StringNotEquals = {
+          "aws:RequestedRegion" = [
+            "us-east-1",
+            "ap-south-1"
+          ]
+        }
+      }
+    }]
+  })
+}</code></pre>
+
+
+            <h3>Attach the Guardrails to the Workloads OU</h3>
+
+            <pre><code>resource "aws_organizations_policy_attachment" "workloads_guardrails" {
+  for_each = toset([
+    aws_organizations_policy.deny_leave_org.id,
+    aws_organizations_policy.deny_disable_cloudtrail.id,
+    aws_organizations_policy.deny_region_lockdown.id,
+  ])
+
+  policy_id = each.value
+  target_id = aws_organizations_organizational_unit.workloads.id
+}</code></pre>
+
+            <div class="note">
+
+                <strong>Why attach policies to the OU?</strong>
+
+                Because new accounts placed inside the Workloads OU inherit
+                these organizational restrictions automatically.
+
+            </div>
+
+
+            <!-- Step 4 -->
+
+            <h2 id="logging">
+                Step 4 — Centralized, Tamper-Resistant Logging
+            </h2>
+
+            <p>
+                Centralized logging is another important part of a landing
+                zone. Instead of keeping security logs inside each workload
+                account, logs can be centralized into a dedicated
+                <strong>Log Archive account</strong>.
+            </p>
+
+            <p>
+                A centralized destination also makes it easier to protect
+                security logs from accidental or malicious deletion.
+            </p>
+
+            <pre><code># modules/centralized-logging/main.tf
+
+resource "aws_s3_bucket" "log_archive" {
+  bucket = "yourcompany-log-archive-${var.account_id}"
+}
+
+resource "aws_s3_bucket_versioning" "log_archive" {
+  bucket = aws_s3_bucket.log_archive.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "log_archive" {
+  bucket = aws_s3_bucket.log_archive.id
+
+  rule {
+    id     = "transition-old-logs"
+    status = "Enabled"
+
+    transition {
+      days          = 90
+      storage_class = "GLACIER"
+    }
+  }
+}</code></pre>
+
+
+            <h3>Bucket Policy</h3>
+
+            <p>
+                The bucket policy controls who can write to the centralized
+                logging bucket and prevents deletion of archived objects.
+            </p>
+
+            <pre><code>resource "aws_s3_bucket_policy" "log_archive" {
+  bucket = aws_s3_bucket.log_archive.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+
+    Statement = [
+
+      {
+        Sid       = "AllowCloudTrailWrite"
+        Effect    = "Allow"
+
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+
+        Action = "s3:PutObject"
+
+        Resource = "${aws_s3_bucket.log_archive.arn}/*"
+
+        Condition = {
+          StringEquals = {
+            "aws:PrincipalOrgID" = var.organization_id
+            "s3:x-amz-acl"       = "bucket-owner-full-control"
+          }
+        }
+      },
+
+      {
+        Sid       = "DenyDelete"
+        Effect    = "Deny"
+        Principal = "*"
+
+        Action = [
+          "s3:DeleteObject",
+          "s3:DeleteBucket"
+        ]
+
+        Resource = [
+          aws_s3_bucket.log_archive.arn,
+          "${aws_s3_bucket.log_archive.arn}/*"
+        ]
+      }
+
+    ]
+  })
+}</code></pre>
+
+            <div class="warning">
+
+                <strong>Logging should be treated as security infrastructure.</strong>
+
+                If an attacker can compromise a workload account and then
+                delete the evidence of their activity from the same account,
+                centralized logging loses much of its value.
+
+            </div>
+
+
+            <!-- Step 5 -->
+
+            <h2 id="cross-account">
+                Step 5 — Cross-Account Access from Terraform
+            </h2>
+
+            <p>
+                Terraform should not depend on long-lived credentials stored
+                separately for every AWS account.
+            </p>
+
+            <p>
+                Instead, the deployment identity can assume a role in the
+                target account.
+            </p>
+
+            <pre><code># environments/prod/main.tf
+
+provider "aws" {
+  region = "ap-south-1"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${var.prod_account_id}:role/OrganizationAccountAccessRole"
+
+    session_name = "terraform-prod"
+  }
+}
+
+module "account_baseline" {
+  source = "../../modules/account-baseline"
+
+  account_name     = "prod"
+  organization_id  = var.organization_id
+  log_archive_arn  = var.log_archive_bucket_arn
+  enable_guardduty = true
+  budget_limit_usd = 5000
+}</code></pre>
+
+            <p>
+                The important part is the
+                <code>assume_role</code> block. Terraform starts with an
+                identity that has permission to assume the target role and
+                then operates within the target account.
+            </p>
+
+            <blockquote>
+                <p>
+                    One CI/CD identity can reach multiple environments without
+                    storing permanent credentials for every AWS account.
+                </p>
+            </blockquote>
+
+            <p>
+                This same pattern works well with CI/CD systems such as
+                GitHub Actions using OIDC-based authentication.
+            </p>
+
+
+            <!-- Step 6 -->
+
+            <h2 id="state">
+                Step 6 — Isolated Remote State per Account
+            </h2>
+
+            <p>
+                Terraform state should also be isolated. Each account or
+                environment should have its own state location and locking
+                mechanism.
+            </p>
+
+            <pre><code># environments/prod/backend.tf
+
+terraform {
+  backend "s3" {
+    bucket         = "yourcompany-tfstate-prod"
+    key            = "landing-zone/prod/terraform.tfstate"
+    region         = "ap-south-1"
+    dynamodb_table = "terraform-locks-prod"
+    encrypt        = true
+  }
+}</code></pre>
+
+            <p>
+                This means that a Terraform operation against the development
+                environment does not need to interact with the production
+                state file.
+            </p>
+
+            <div class="note">
+
+                <strong>Bootstrap first.</strong>
+
+                The state bucket and locking infrastructure need to exist
+                before Terraform can use them as its backend. This is usually
+                handled through a small bootstrap process or one-time setup.
+
+            </div>
+
+
+            <!-- Pitfalls -->
+
+            <h2 id="pitfalls">
+                Common Pitfalls
+            </h2>
+
+            <h3>1. One State File for Everything</h3>
+
+            <p>
+                A single state file creates unnecessary coupling between
+                environments and increases the potential blast radius of
+                Terraform changes.
+            </p>
+
+            <h3>2. Attaching SCPs Per Account</h3>
+
+            <p>
+                Attaching guardrails individually works at small scale but
+                becomes difficult to maintain as the organization grows.
+                OU-level policies provide a more scalable model.
+            </p>
+
+            <h3>3. Leaving Root Access Unmanaged</h3>
+
+            <p>
+                Member accounts should have appropriate root-account
+                protections and a controlled break-glass process. Routine
+                administrative work should use delegated roles instead.
+            </p>
+
+            <h3>4. No Account-Closure Runbook</h3>
+
+            <p>
+                Account closure is a significant operational process.
+                Terraform should not be treated as the mechanism for casually
+                destroying an AWS account.
+            </p>
+
+            <h3>5. Hardcoding Account IDs Everywhere</h3>
+
+            <p>
+                Hardcoding account identifiers throughout the repository makes
+                the architecture harder to maintain. Account information can
+                instead be managed centrally and passed into modules.
+            </p>
+
+            <div class="warning">
+
+                <strong>Remember the principle of least privilege.</strong>
+
+                Cross-account roles should receive only the permissions they
+                actually need. The fact that an account can assume another
+                role does not mean that role should have unrestricted access.
+
+            </div>
+
+
+            <!-- Next -->
+
+            <h2 id="next">
+                Where This Goes Next
+            </h2>
+
+            <p>
+                The architecture described here is a foundation rather than
+                the final destination. Once the basic landing zone is working,
+                several additional capabilities can be introduced.
+            </p>
+
+            <ul>
+
+                <li>
+                    <strong>AWS IAM Identity Center:</strong>
+                    Use centralized identity and permission sets for human
+                    access instead of creating IAM users across accounts.
+                </li>
+
+                <li>
+                    <strong>AWS Control Tower:</strong>
+                    Use a managed landing-zone approach when you want AWS to
+                    handle more of the lifecycle and governance experience.
+                </li>
+
+                <li>
+                    <strong>Account Factory automation:</strong>
+                    Automate the creation of new workload accounts together
+                    with their baseline security, logging, and governance
+                    configuration.
+                </li>
+
+                <li>
+                    <strong>Centralized security services:</strong>
+                    Expand organization-wide security visibility through
+                    services such as GuardDuty, Security Hub, and AWS Config.
+                </li>
+
+            </ul>
+
+            <p>
+                The important point is that these capabilities build on the
+                same foundational architecture rather than replacing it.
+            </p>
+
+
+            <!-- Final Takeaway -->
+
+            <h2 id="conclusion">
+                The Final Takeaway
+            </h2>
+
+            <div class="warning">
+
+                <strong>
+                    A secure AWS environment starts with a clear boundary.
+                </strong>
+
+                In a multi-account architecture, accounts provide the
+                isolation boundary, Organizational Units provide a place to
+                apply common governance, SCPs provide guardrails, centralized
+                logging provides visibility, and Terraform provides a
+                repeatable way to manage the infrastructure.
+
+            </div>
+
+            <p>
+                The goal is not simply to create more AWS accounts. The goal
+                is to create an environment where teams can move independently
+                while organizational security and governance remain consistent.
+            </p>
+
+            <p>
+                Terraform makes the architecture repeatable. AWS Organizations
+                provides the account hierarchy. SCPs establish organizational
+                boundaries. Cross-account roles provide controlled access.
+                And isolated Terraform state prevents infrastructure changes
+                from becoming unnecessarily coupled.
+            </p>
+
+            <blockquote>
+
+                <p>
+                    Accounts are the isolation boundary. OUs are where
+                    guardrails live. Terraform state should never cross an
+                    account boundary by accident.
+                </p>
+
+            </blockquote>
+
+            <p>
+                Once these foundations are in place, services such as IAM
+                Identity Center, Control Tower, centralized security
+                monitoring, and automated account provisioning can be added
+                without changing the core principle: build the AWS
+                organization so that security and isolation are part of the
+                architecture from the beginning.
+            </p>
+
+        </article>
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <a href="../../blog.html" class="back-button">
+            ← Back to blogs
+        </a>
+
+    </footer>
+
+</body>
+</html>
+```
