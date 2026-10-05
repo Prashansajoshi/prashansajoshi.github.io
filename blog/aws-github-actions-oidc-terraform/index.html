@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Deploying to AWS from GitHub Actions without long-lived access keys using OpenID Connect (OIDC), IAM roles, and Terraform.">
+    <meta name="keywords" content="AWS, GitHub Actions, OIDC, Terraform, AWS IAM, CI/CD, DevOps, SRE">
+    <meta name="author" content="Prashansa Joshi">
+
+    <title>Deploying to AWS from GitHub Actions Without Access Keys: OIDC and Terraform</title>
+
+    <style>
+        body {
+            background-color: black;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header nav {
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+
+        header nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            margin: 2em 0 3em 0;
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            background: #161b22;
+        }
+
+        .hero-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            z-index: 1;
+            margin: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 3em;
+            width: 100%;
+            background: linear-gradient(
+                transparent,
+                rgba(0, 0, 0, 0.95)
+            );
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            color: white;
+            margin: 0 0 0.5em 0;
+            border: none;
+            padding: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .blog-meta {
+            color: #c9d1d9;
+            font-size: 1.1em;
+        }
+
+        .blog-meta time {
+            background: rgba(88, 166, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 2em;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.5em;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #79c0ff;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #a5d6ff;
+        }
+
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+
+        /* Code */
+        pre,
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono',
+                Menlo, monospace;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            line-height: 1.45;
+        }
+
+        code {
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+            color: #e6edf3;
+        }
+
+        pre code {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        :not(pre) > code {
+            color: #ff7b72;
+        }
+
+        /* Lists */
+        ul,
+        ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+
+        li {
+            margin: 0.5em 0;
+        }
+
+        li strong {
+            color: #ffa657;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #161b22;
+            color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(22, 27, 34, 0.5);
+        }
+
+        /* TOC */
+        .toc {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2em 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ul {
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .toc li {
+            break-inside: avoid;
+        }
+
+        /* Note */
+        .note {
+            border-left: 4px solid #58a6ff;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+        }
+
+        .note strong {
+            color: #58a6ff;
+        }
+
+        /* Warning */
+        .warning {
+            border-left: 4px solid #ffa657;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(255, 166, 87, 0.1);
+            color: #ffd7a5;
+        }
+
+        .warning strong {
+            color: #ffa657;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                #30363d,
+                transparent
+            );
+            margin: 3em 0;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #238636;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin: 2em 0;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background-color: #2ea043;
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .hero {
+                min-height: 300px;
+            }
+
+            .hero-content {
+                padding: 2em;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .toc ul {
+                columns: 1;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                min-height: 250px;
+            }
+
+            .hero-content {
+                padding: 1.5em;
+            }
+
+            .hero h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="../../index.html">🏠 Home</a> |
+        <a href="../../blog.html">📚 All Blogs</a>
+    </nav>
+</header>
+
+<main>
+
+<article>
+
+    <!-- HERO IMAGE -->
+    <div class="hero">
+
+        <img
+            src="images/main.jpg"
+            alt="Deploying to AWS from GitHub Actions Without Access Keys using OIDC and Terraform"
+            class="hero-image"
+        >
+
+        <div class="hero-content">
+
+            <h1>
+                Deploying to AWS from GitHub Actions Without Access Keys:
+                OIDC and Terraform
+            </h1>
+
+            <div class="blog-meta">
+                <time datetime="2026-10-05">
+                    📅 October 5, 2026
+                </time>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- INTRODUCTION -->
+
+    <p>
+        Somewhere in most organizations there is a GitHub secret named
+        <code>AWS_ACCESS_KEY_ID</code> that belongs to an IAM user created years ago.
+        It has more permissions than the pipeline needs, it has never been rotated,
+        and nobody is sure which repositories can read it. It works, so it stays.
+    </p>
+
+    <p>
+        That secret is the weak point of the whole delivery pipeline. A long-lived key
+        can be copied out of a compromised workflow, a leaked log or a forked repository,
+        and it stays valid until someone notices. The fix is not better rotation.
+        The fix is not having a key at all.
+    </p>
+
+    <p>
+        GitHub Actions can prove its identity to AWS using
+        <strong>OpenID Connect (OIDC)</strong>. AWS then hands the workflow credentials
+        that expire in about an hour, scoped to one role, usable only from the repository,
+        branch or environment that was approved. This post builds that setup end to end
+        with Terraform: the identity provider, separate roles for planning and applying,
+        and the two workflows that use them.
+    </p>
+
+
+    <!-- TABLE OF CONTENTS -->
+
+    <div class="toc">
+
+        <h3>📋 Table of Contents</h3>
+
+        <ul>
+            <li>
+                <a href="#handshake">
+                    How the handshake works
+                </a>
+            </li>
+
+            <li>
+                <a href="#design">
+                    The design: two roles, two trust boundaries
+                </a>
+            </li>
+
+            <li>
+                <a href="#step1">
+                    Step 1: Create the OIDC identity provider
+                </a>
+            </li>
+
+            <li>
+                <a href="#step2">
+                    Step 2: The plan role
+                </a>
+            </li>
+
+            <li>
+                <a href="#step3">
+                    Step 3: The apply role
+                </a>
+            </li>
+
+            <li>
+                <a href="#step4">
+                    Step 4: The pull request workflow
+                </a>
+            </li>
+
+            <li>
+                <a href="#step5">
+                    Step 5: The deploy workflow
+                </a>
+            </li>
+
+            <li>
+                <a href="#verify">
+                    Verifying it works
+                </a>
+            </li>
+
+            <li>
+                <a href="#pitfalls">
+                    Common pitfalls
+                </a>
+            </li>
+
+            <li>
+                <a href="#migration">
+                    Migrating an existing pipeline
+                </a>
+            </li>
+
+            <li>
+                <a href="#next">
+                    Where this goes next
+                </a>
+            </li>
+        </ul>
+
+    </div>
+
+
+    <div class="divider"></div>
+
+
+    <!-- HANDSHAKE -->
+
+    <h2 id="handshake">
+        How the handshake works
+    </h2>
+
+    <p>
+        Every workflow run can ask GitHub for a signed JSON Web Token (JWT).
+        The token carries claims describing where the run came from:
+    </p>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Claim</th>
+                <th>Example value</th>
+                <th>Meaning</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td><code>iss</code></td>
+
+                <td>
+                    <code>
+                        https://token.actions.githubusercontent.com
+                    </code>
+                </td>
+
+                <td>
+                    Who issued the token
+                </td>
+            </tr>
+
+            <tr>
+                <td><code>aud</code></td>
+
+                <td>
+                    <code>sts.amazonaws.com</code>
+                </td>
+
+                <td>
+                    Who the token is meant for
+                </td>
+            </tr>
+
+            <tr>
+                <td><code>sub</code></td>
+
+                <td>
+                    <code>
+                        repo:acme/infra:environment:prod
+                    </code>
+                </td>
+
+                <td>
+                    Repository plus the context of the run
+                </td>
+            </tr>
+
+            <tr>
+                <td><code>ref</code></td>
+
+                <td>
+                    <code>refs/heads/main</code>
+                </td>
+
+                <td>
+                    Branch or tag that triggered the run
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <p>
+        The flow, matching the numbers in the diagram above:
+    </p>
+
+    <ol>
+
+        <li>
+            The workflow requests an ID token from GitHub. This only works when the
+            workflow declares <code>permissions: id-token: write</code>.
+        </li>
+
+        <li>
+            The token is sent to AWS STS through
+            <code>AssumeRoleWithWebIdentity</code>.
+        </li>
+
+        <li>
+            STS verifies the signature against GitHub's public keys, then evaluates
+            the <strong>trust policy</strong> of the requested IAM role.
+        </li>
+
+        <li>
+            If the claims satisfy the trust policy, STS returns temporary credentials.
+        </li>
+
+        <li>
+            Terraform runs with those credentials. When the job ends, they expire.
+        </li>
+
+    </ol>
+
+
+    <!-- OIDC IMAGE -->
+
+    <img
+        src="images/image1.jpg"
+        alt="GitHub Actions OIDC flow from GitHub to AWS STS and IAM"
+        loading="lazy"
+    >
+
+    <p class="image-caption">
+        GitHub Actions requests an OIDC token, AWS STS validates it,
+        and the workflow receives temporary credentials through an IAM role.
+    </p>
+
+
+    <p>
+        The <code>sub</code> claim changes with context, which is what makes
+        fine-grained roles possible:
+    </p>
+
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Run context</th>
+                <th><code>sub</code> value</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>Pull request</td>
+
+                <td>
+                    <code>
+                        repo:acme/infra:pull_request
+                    </code>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Push to a branch</td>
+
+                <td>
+                    <code>
+                        repo:acme/infra:ref:refs/heads/main
+                    </code>
+                </td>
+            </tr>
+
+            <tr>
+                <td>Job that targets an environment</td>
+
+                <td>
+                    <code>
+                        repo:acme/infra:environment:prod
+                    </code>
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <p>
+        When a job targets a GitHub environment, the environment form wins over
+        the branch form. Environments support required reviewers, so a trust policy
+        pinned to <code>environment:prod</code> means AWS credentials for production
+        can only exist after a human approved the deployment.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- DESIGN -->
+
+    <h2 id="design">
+        The design: two roles, two trust boundaries
+    </h2>
+
+    <p>
+        A single all-powerful role defeats most of the benefit.
+        The setup here uses two:
+    </p>
+
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Trusted for</th>
+                <th>Permissions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>
+                    <code>gha-terraform-plan</code>
+                </td>
+
+                <td>
+                    Pull requests
+                </td>
+
+                <td>
+                    Read-only access to AWS and to the Terraform state
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <code>gha-terraform-apply</code>
+                </td>
+
+                <td>
+                    The <code>prod</code> environment only
+                </td>
+
+                <td>
+                    Write access, scoped to what the stack manages
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <p>
+        Pull requests are the riskiest trigger because they can contain arbitrary code.
+        A malicious or careless change to a workflow file in a PR can run whatever it wants,
+        but it can only obtain the plan role, which cannot change anything.
+        Production write access stays behind the protected environment.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- STEP 1 -->
+
+    <h2 id="step1">
+        Step 1: Create the OIDC identity provider
+    </h2>
+
+    <p>
+        This is bootstrap code. It runs once per AWS account, using whatever admin
+        access exists today. After this, the pipeline manages itself.
+    </p>
+
+
+    <pre><code># bootstrap/versions.tf
+
+terraform {
+  required_version = "&gt;= 1.10"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "&gt;= 5.81"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.region
+}</code></pre>
+
+
+    <pre><code># bootstrap/variables.tf
+
+variable "region" {
+  type    = string
+  default = "ap-south-1"
+}
+
+variable "github_org" {
+  type = string
+}
+
+variable "github_repo" {
+  type = string
+}
+
+variable "state_bucket" {
+  description = "S3 bucket that holds the Terraform state for this repo"
+  type        = string
+}
+
+variable "apply_policy_arns" {
+  description = "Managed policies attached to the apply role. Scope these to what the stack manages."
+  type        = list(string)
+}</code></pre>
+
+
+    <pre><code># bootstrap/oidc.tf
+
+resource "aws_iam_openid_connect_provider" "github" {
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
+}</code></pre>
+
+
+    <h3>Two notes on this resource</h3>
+
+    <ul>
+
+        <li>
+            <strong>No thumbprint needed.</strong>
+            Older guides hardcode a certificate thumbprint.
+            AWS now validates GitHub's token endpoint against its own library
+            of trusted root CAs, and recent versions of the AWS provider treat
+            <code>thumbprint_list</code> as optional.
+        </li>
+
+        <li>
+            <strong>One provider per URL per account.</strong>
+            If another team already created the GitHub provider in the account,
+            a second one fails with <code>EntityAlreadyExists</code>.
+            Reference the existing one with a
+            <code>data "aws_iam_openid_connect_provider"</code> block,
+            or import it.
+        </li>
+
+    </ul>
+
+
+    <div class="divider"></div>
+
+
+    <!-- STEP 2 -->
+
+    <h2 id="step2">
+        Step 2: The plan role (pull requests, read-only)
+    </h2>
+
+
+    <pre><code># bootstrap/role_plan.tf
+
+data "aws_iam_policy_document" "plan_trust" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [
+        aws_iam_openid_connect_provider.github.arn
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = [
+        "repo:${var.github_org}/${var.github_repo}:pull_request"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "plan" {
+  name                 = "gha-terraform-plan"
+  assume_role_policy   = data.aws_iam_policy_document.plan_trust.json
+  max_session_duration = 3600
+}
+
+resource "aws_iam_role_policy_attachment" "plan_readonly" {
+  role       = aws_iam_role.plan.name
+  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
+data "aws_iam_policy_document" "state_read" {
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [
+      "arn:aws:s3:::${var.state_bucket}"
+    ]
+  }
+
+  statement {
+    actions   = ["s3:GetObject"]
+    resources = [
+      "arn:aws:s3:::${var.state_bucket}/*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "plan_state" {
+  name   = "state-read"
+  role   = aws_iam_role.plan.id
+  policy = data.aws_iam_policy_document.state_read.json
+}</code></pre>
+
+
+    <p>
+        The role can read state but not write it, so the plan job runs with
+        <code>-lock=false</code>. A read-only plan does not need to hold the state lock,
+        and skipping it keeps the role from needing any write permission on the bucket.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- STEP 3 -->
+
+    <h2 id="step3">
+        Step 3: The apply role (production environment only)
+    </h2>
+
+
+    <pre><code># bootstrap/role_apply.tf
+
+data "aws_iam_policy_document" "apply_trust" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    principals {
+      type        = "Federated"
+      identifiers = [
+        aws_iam_openid_connect_provider.github.arn
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = [
+        "repo:${var.github_org}/${var.github_repo}:environment:prod"
+      ]
+    }
+  }
+}
+
+resource "aws_iam_role" "apply" {
+  name                 = "gha-terraform-apply"
+  assume_role_policy   = data.aws_iam_policy_document.apply_trust.json
+  max_session_duration = 3600
+}
+
+resource "aws_iam_role_policy_attachment" "apply" {
+  for_each   = toset(var.apply_policy_arns)
+  role       = aws_iam_role.apply.name
+  policy_arn = each.value
+}
+
+data "aws_iam_policy_document" "state_write" {
+  statement {
+    actions   = ["s3:ListBucket"]
+    resources = [
+      "arn:aws:s3:::${var.state_bucket}"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.state_bucket}/*"
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "apply_state" {
+  name   = "state-write"
+  role   = aws_iam_role.apply.id
+  policy = data.aws_iam_policy_document.state_write.json
+}</code></pre>
+
+
+    <pre><code># bootstrap/outputs.tf
+
+output "plan_role_arn" {
+  value = aws_iam_role.plan.arn
+}
+
+output "apply_role_arn" {
+  value = aws_iam_role.apply.arn
+}</code></pre>
+
+
+    <p>
+        What goes into <code>apply_policy_arns</code> depends on what the stack manages.
+        <code>AdministratorAccess</code> is tempting and acceptable for the first bootstrap
+        run, but the end state should be a policy that lists only the services Terraform
+        touches, ideally combined with a permissions boundary.
+    </p>
+
+
+    <div class="warning">
+        <strong>Security note:</strong>
+        A pipeline role with admin rights is still a path to full account takeover,
+        just a shorter-lived one. Keep the apply role scoped to what the stack actually manages.
+    </div>
+
+
+    <p>
+        The state backend in the Terraform code being deployed uses S3 native locking
+        (Terraform 1.10 and later):
+    </p>
+
+
+    <pre><code>terraform {
+  backend "s3" {
+    bucket       = "acme-tfstate-prod"
+    key          = "infra/terraform.tfstate"
+    region       = "ap-south-1"
+    encrypt      = true
+    use_lockfile = true
+  }
+}</code></pre>
+
+
+    <p>
+        Teams still using a DynamoDB lock table need to add
+        <code>dynamodb:GetItem</code>, <code>PutItem</code> and
+        <code>dynamodb:DeleteItem</code> on that table to the apply role.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- STEP 4 -->
+
+    <h2 id="step4">
+        Step 4: The pull request workflow
+    </h2>
+
+
+    <pre><code># .github/workflows/terraform-plan.yml
+
+name: terraform-plan
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::111111111111:role/gha-terraform-plan
+          aws-region: ap-south-1
+
+      - name: Confirm identity
+        run: aws sts get-caller-identity
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform init -input=false
+
+      - run: terraform validate
+
+      - run: terraform plan -input=false -lock=false -no-color</code></pre>
+
+
+    <p>
+        The <strong>Confirm identity</strong> step is cheap and makes debugging much easier.
+        The output shows the assumed role and a session name that traces back to the workflow run.
+    </p>
+
+
+    <p>
+        Pull requests from forks do not receive an <code>id-token</code> by default,
+        so a fork cannot obtain even the plan role. That is the intended behavior
+        for public repositories.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- STEP 5 -->
+
+    <h2 id="step5">
+        Step 5: The deploy workflow
+    </h2>
+
+
+    <pre><code># .github/workflows/terraform-apply.yml
+
+name: terraform-apply
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-apply-prod
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    environment: prod
+
+    defaults:
+      run:
+        working-directory: infra
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::111111111111:role/gha-terraform-apply
+          aws-region: ap-south-1
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - run: terraform init -input=false
+
+      - run: terraform apply -input=false -auto-approve</code></pre>
+
+
+    <p>
+        Two settings outside the YAML complete the picture. In the repository settings,
+        create the <code>prod</code> environment, add required reviewers, and restrict
+        deployments to the <code>main</code> branch.
+    </p>
+
+
+    <p>
+        Then protect <code>main</code> so every change arrives through a pull request
+        that already ran the plan job. The role trust policy, environment rules,
+        and branch protection each cover a gap the others leave.
+    </p>
+
+
+    <div class="divider"></div>
+
+
+    <!-- VERIFY -->
+
+    <h2 id="verify">
+        Verifying it works, and proving it is locked down
+    </h2>
+
+
+    <p>
+        A successful run is only half the test. The more useful check is confirming
+        that the wrong callers fail.
+    </p>
+
+
+    <ul>
+
+        <li>
+            <strong>Positive test.</strong>
+            Open a pull request that touches <code>infra/</code>.
+            The plan job should print an assumed-role ARN for
+            <code>gha-terraform-plan</code>.
+        </li>
+
+        <li>
+            <strong>Negative test 1.</strong>
+            Change the plan workflow temporarily to assume the apply role.
+            The step should fail with
+            <code>Not authorized to perform sts:AssumeRoleWithWebIdentity</code>.
+        </li>
+
+        <li>
+            <strong>Negative test 2.</strong>
+            Copy the apply workflow into a different repository in the same organization.
+            It should fail because the <code>sub</code> names the original repository.
+        </li>
+
+        <li>
+            <strong>Audit trail.</strong>
+            In CloudTrail, each assumption appears as an
+            <code>AssumeRoleWithWebIdentity</code> event.
+        </li>
+
+    </ul>
+
+
+    <div class="divider"></div>
+
+
+    <!-- PITFALLS -->
+
+    <h2 id="pitfalls">
+        Common pitfalls
+    </h2>
+
+
+    <ul>
+
+        <li>
+            <strong>Wildcards in <code>sub</code>.</strong>
+            A condition like <code>repo:acme/*</code> lets every repository
+            in the organization assume the role, including a brand-new repository.
+            Pin the repository and environment or branch.
+        </li>
+
+        <li>
+            <strong>Missing <code>aud</code> condition.</strong>
+            Always require <code>sts.amazonaws.com</code>.
+        </li>
+
+        <li>
+            <strong><code>StringLike</code> where <code>StringEquals</code> works.</strong>
+            Pattern matching widens the trust surface.
+        </li>
+
+        <li>
+            <strong>Forgetting <code>id-token: write</code>.</strong>
+            The credentials step fails because the job never received a token.
+        </li>
+
+        <li>
+            <strong>Mismatched <code>sub</code> casing and format.</strong>
+            The comparison is case-sensitive.
+        </li>
+
+        <li>
+            <strong>Session length.</strong>
+            A long apply that outlasts the credentials can fail midway.
+            Either split the stack or increase the role session duration.
+        </li>
+
+        <li>
+            <strong>Duplicate OIDC providers.</strong>
+            One provider per GitHub OIDC URL can exist in an AWS account.
+        </li>
+
+    </ul>
+
+
+    <div class="divider"></div>
+
+
+    <!-- MIGRATION -->
+
+    <h2 id="migration">
+        Migrating an existing pipeline
+    </h2>
+
+
+    <ol>
+
+        <li>
+            Run the bootstrap code to create the provider and both roles.
+        </li>
+
+        <li>
+            Switch the workflows to <code>role-to-assume</code>
+            and remove the access key inputs.
+        </li>
+
+        <li>
+            Run a plan and an apply through the new path and confirm they succeed.
+        </li>
+
+        <li>
+            Delete the <code>AWS_ACCESS_KEY_ID</code> and
+            <code>AWS_SECRET_ACCESS_KEY</code> repository secrets.
+        </li>
+
+        <li>
+            Deactivate the IAM user's access keys, wait a few days for anything
+            unexpected to surface, then delete the keys and the user.
+        </li>
+
+    </ol>
+
+
+    <div class="note">
+
+        <strong>Important:</strong>
+        A pipeline that supports OIDC while an old key still sits in secrets
+        has not removed the risk.
+
+    </div>
+
+
+    <div class="divider"></div>
+
+
+    <!-- NEXT -->
+
+    <h2 id="next">
+        Where this goes next
+    </h2>
+
+
+    <ul>
+
+        <li>
+            <strong>One role per environment.</strong>
+            Repeat the pattern for <code>dev</code> and <code>staging</code>
+            with their own environments and accounts.
+        </li>
+
+        <li>
+            <strong>Reusable workflows.</strong>
+            Platform teams can publish a shared deploy workflow and restrict
+            the trust policy with the <code>job_workflow_ref</code> claim.
+        </li>
+
+        <li>
+            <strong>Plan output in the pull request.</strong>
+            Posting the plan as a PR comment turns review into a real
+            change-approval step.
+        </li>
+
+        <li>
+            <strong>The same pattern beyond AWS.</strong>
+            Azure and Google Cloud both support federated credentials
+            for GitHub Actions with the same general pattern.
+        </li>
+
+    </ul>
+
+
+    <blockquote>
+
+        <p>
+            The principle holds in every variation:
+            credentials should be issued at the moment of need,
+            to a specific job, and expire when the job ends.
+        </p>
+
+    </blockquote>
+
+</article>
+
+</main>
+
+
+<footer>
+
+    <a href="../../blog.html" class="back-button">
+        ← Back to blogs
+    </a>
+
+</footer>
+
+</body>
+</html>
