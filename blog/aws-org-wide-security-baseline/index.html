@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Learn how to build an organization-wide AWS security baseline with Terraform using delegated administrators, GuardDuty, Security Hub, IAM Access Analyzer, AWS Config, SCPs, and IAM Identity Center.">
+    <meta name="keywords" content="AWS Security Baseline, AWS Organizations, Terraform, GuardDuty, Security Hub, IAM Access Analyzer, AWS Config, SCP, IAM Identity Center, AWS Security">
+    <meta name="author" content="Prashansa Joshi">
+
+    <title>Building an Org-Wide AWS Security Baseline with Terraform</title>
+
+    <style>
+        /* Dark Theme */
+        body {
+            background-color: black;
+            color: #e6edf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        header nav {
+            margin-bottom: 2em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid #30363d;
+        }
+
+        header nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 500;
+        }
+
+        header nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            margin: 2em 0 3em 0;
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+        }
+
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            z-index: 1;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 3em;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            color: white;
+            margin: 0 0 0.5em 0;
+            border: none;
+            padding: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero .blog-meta {
+            color: #c9d1d9;
+            font-size: 1.1em;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+
+        .hero .blog-meta time {
+            background: rgba(88, 166, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            margin-top: 2em;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.5em;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #58a6ff;
+            border-bottom: 2px solid #1f6feb;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #79c0ff;
+        }
+
+        h3 {
+            font-size: 1.4em;
+            color: #a5d6ff;
+        }
+
+        /* Links */
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+
+        /* Code Blocks */
+        pre, code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 1.5em 0;
+            line-height: 1.45;
+        }
+
+        code {
+            padding: 0.2em 0.4em;
+            font-size: 0.9em;
+            color: #e6edf3;
+        }
+
+        pre code {
+            padding: 0;
+            background: none;
+            border: none;
+        }
+
+        :not(pre) > code {
+            color: #ff7b72;
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-left: 2em;
+            margin: 1em 0;
+        }
+
+        li {
+            margin: 0.5em 0;
+        }
+
+        li strong {
+            color: #ffa657;
+        }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            margin: 1.5em 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #8b949e;
+            font-size: 0.9em;
+            margin-top: -0.5em;
+            margin-bottom: 2em;
+        }
+
+        /* Blockquotes */
+        blockquote {
+            border-left: 4px solid #1f6feb;
+            margin: 2em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(31, 111, 235, 0.1);
+            color: #a5d6ff;
+            border-radius: 0 6px 6px 0;
+        }
+
+        blockquote p {
+            margin: 0;
+        }
+
+        /* Note boxes */
+        .note {
+            border-left: 4px solid #58a6ff;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+        }
+
+        .note strong {
+            color: #58a6ff;
+        }
+
+        /* Warning boxes */
+        .warning {
+            border-left: 4px solid #ffa657;
+            margin: 1.5em 0;
+            padding: 1em 1.5em;
+            background-color: rgba(255, 166, 87, 0.1);
+            color: #ffd7a5;
+        }
+
+        .warning strong {
+            color: #ffa657;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5em 0;
+        }
+
+        th, td {
+            border: 1px solid #30363d;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #161b22;
+            color: #ffffff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(22, 27, 34, 0.5);
+        }
+
+        /* Table of Contents */
+        .toc {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 2em 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            border: none;
+        }
+
+        .toc ul {
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .toc li {
+            break-inside: avoid;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #238636;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin: 2em 0;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: #2ea043;
+            text-decoration: none;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #30363d, transparent);
+            margin: 3em 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .hero {
+                min-height: 300px;
+                margin: 1em 0 2em 0;
+            }
+
+            .hero-content {
+                padding: 2em;
+            }
+
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .toc ul {
+                columns: 1;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                min-height: 250px;
+            }
+
+            .hero-content {
+                padding: 1.5em;
+            }
+
+            .hero h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="../../index.html">🏠 Home</a> |
+            <a href="../../blog.html">📚 All Blogs</a>
+        </nav>
+    </header>
+
+    <main>
+        <article>
+
+            <!-- Hero Section -->
+            <div class="hero">
+
+                <!-- Featured image:
+                     blog/aws-org-wide-security-baseline/images/main.jpg
+                -->
+                <img src="images/main.png"
+                     alt="Building an Org-Wide AWS Security Baseline with Terraform"
+                     class="hero-image">
+
+                <div class="hero-content">
+
+                    <h1>
+                        Building an Org-Wide AWS Security Baseline with Terraform
+                    </h1>
+
+                    <div class="blog-meta">
+                        <time datetime="2026-11-06">
+                            📅 Oct 20, 2026
+                        </time>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <!-- Table of Contents -->
+            <div class="toc">
+
+                <h3>📋 Table of Contents</h3>
+
+                <ul>
+                    <li><a href="#introduction">What a Baseline Needs to Cover</a></li>
+                    <li><a href="#delegated-admin">The Delegated Administrator Pattern</a></li>
+                    <li><a href="#project-layout">Project Layout</a></li>
+                    <li><a href="#trusted-access">Step 0: Enable Trusted Access</a></li>
+                    <li><a href="#providers">Step 1: Two Providers, One Apply</a></li>
+                    <li><a href="#delegated-admins">Step 2: Designate Delegated Administrators</a></li>
+                    <li><a href="#guardduty">Step 3: GuardDuty Across the Organization</a></li>
+                    <li><a href="#security-hub">Step 4: Security Hub as the Single Pane</a></li>
+                    <li><a href="#access-analyzer">Step 5: IAM Access Analyzer</a></li>
+                    <li><a href="#config">Step 6: AWS Config Aggregation</a></li>
+                    <li><a href="#scps">Step 7: Preventive Guardrails with SCPs</a></li>
+                    <li><a href="#account-baseline">Step 8: Per-Account Hardening</a></li>
+                    <li><a href="#identity-center">Step 9: Human Access with IAM Identity Center</a></li>
+                    <li><a href="#verification">Verifying the Baseline</a></li>
+                    <li><a href="#cost">Cost: Where the Bill Grows</a></li>
+                    <li><a href="#pitfalls">Common Pitfalls</a></li>
+                    <li><a href="#next">Where This Goes Next</a></li>
+                </ul>
+
+            </div>
+
+
+            <!-- Introduction -->
+            <h2 id="introduction">What a Baseline Needs to Cover</h2>
+
+            <p>
+                Standing up a multi-account AWS organization is the easy half.
+                The harder half is making sure that the fortieth account created
+                next year has the same threat detection, the same guardrails and
+                the same audit trail as the third one created today, without
+                anyone remembering to click through a checklist.
+            </p>
+
+            <p>
+                Most teams start by enabling GuardDuty in the production account,
+                then Security Hub in another, then a Config rule or two somewhere
+                else. Within a few months the coverage is a patchwork: some
+                accounts report findings, some do not, and nobody can say with
+                confidence which is which. A security baseline fixes that by
+                treating coverage as a property of the organization instead of
+                a property of each account.
+            </p>
+
+            <p>
+                This post builds that baseline in Terraform using the
+                <strong>delegated administrator pattern</strong>: the management
+                account stays nearly empty, a dedicated security account runs
+                GuardDuty, Security Hub, IAM Access Analyzer and AWS Config for
+                the whole organization, and every new account is enrolled
+                automatically. It also adds preventive guardrails with Service
+                Control Policies, a small per-account hardening module, and
+                centralized human access through IAM Identity Center.
+            </p>
+
+            <p>
+                The post assumes a working AWS Organization with a dedicated
+                security account, familiarity with Terraform modules and provider
+                aliases, and a state backend already in place. Organization and
+                account creation are covered in the earlier landing zone post.
+            </p>
+
+            <!-- Architecture Diagram -->
+            <div class="architecture-image">
+                <img src="images/security-baseline-diagram.png"
+                     alt="Org-wide AWS security baseline architecture showing the management account designating a security account as delegated administrator for GuardDuty, Security Hub, Access Analyzer and Config, with member accounts enrolled automatically and SCPs inherited by every OU">
+
+                <p class="image-caption">
+                    Organization-wide security baseline: the security account
+                    centrally manages detective services while SCPs provide
+                    preventive guardrails across member accounts.
+                </p>
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Security Layers -->
+            <h2>Three Layers of an AWS Security Baseline</h2>
+
+            <p>
+                Security tooling falls into three layers, and each answers a
+                different question:
+            </p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Layer</th>
+                        <th>Question it answers</th>
+                        <th>Tools used here</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Preventive</strong></td>
+                        <td>What can never happen, whatever IAM says?</td>
+                        <td>Service Control Policies, account-level hardening</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detective</strong></td>
+                        <td>What is happening, and what drifted?</td>
+                        <td>GuardDuty, Security Hub, IAM Access Analyzer, AWS Config</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Access</strong></td>
+                        <td>Who can get in, and with what permissions?</td>
+                        <td>IAM Identity Center permission sets</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                A baseline that covers only one layer leaves gaps. Detection
+                without prevention produces a steady stream of findings about
+                things that could have been blocked outright. Prevention without
+                detection means the first sign of a problem is an incident.
+            </p>
+
+            <div class="divider"></div>
+
+
+            <!-- Delegated Administrator -->
+            <h2 id="delegated-admin">The Delegated Administrator Pattern</h2>
+
+            <p>
+                Every service in this post supports the same arrangement. The
+                management account <strong>designates</strong> one member
+                account as the delegated administrator for the service. From
+                then on:
+            </p>
+
+            <ul>
+                <li>
+                    The <strong>management account</strong> does no day-to-day
+                    security work. It holds billing, Organizations and little
+                    else, which keeps its attack surface small.
+                </li>
+                <li>
+                    The <strong>security account</strong> sees every member
+                    account's data for that service and can change
+                    organization-wide settings, such as which accounts get
+                    auto-enrolled.
+                </li>
+                <li>
+                    Findings, resources and configuration for all accounts
+                    end up in one place, so the security team works from a
+                    single set of consoles.
+                </li>
+            </ul>
+
+            <p>
+                The sequence is the same for each service, and it is what the
+                numbers in the diagram show:
+            </p>
+
+            <ol>
+                <li>
+                    The management account enables the service's trusted access
+                    in AWS Organizations and designates the security account.
+                </li>
+                <li>
+                    The security account turns the service on and sets the
+                    organization-wide configuration, including auto-enable
+                    for members.
+                </li>
+                <li>
+                    Member accounts are enrolled automatically, and findings
+                    flow up.
+                </li>
+            </ol>
+
+            <blockquote>
+                <p>
+                    The management account establishes the relationship.
+                    The security account operates the service.
+                    Member accounts provide the security data.
+                </p>
+            </blockquote>
+
+            <div class="divider"></div>
+
+
+            <!-- Project Layout -->
+            <h2 id="project-layout">Project Layout</h2>
+
+            <p>
+                The Terraform code is organized into three main areas: the
+                organization configuration, resources that live in the security
+                account, and a reusable module for account-level hardening.
+            </p>
+
+            <pre><code>security-baseline/
+├── org/                       # applied from the management account
+│   ├── providers.tf           # default provider (management) + aliased provider (security)
+│   ├── delegated_admins.tf    # designate the security account for each service
+│   ├── scps.tf                # preventive guardrails
+│   └── identity_center.tf     # permission sets and assignments
+│
+├── security-account/          # resources that live in the security account
+│   ├── guardduty.tf
+│   ├── securityhub.tf
+│   ├── access_analyzer.tf
+│   └── config.tf
+│
+└── modules/
+    └── account-baseline/      # applied to every account, including new ones
+        ├── main.tf
+        └── variables.tf</code></pre>
+
+            <p>
+                For clarity the snippets below sit in one root module, using
+                two provider configurations. Teams that prefer stronger
+                blast-radius separation can split <code>security-account/</code>
+                into its own state and read the account ID from a variable.
+                The trade-off is discussed in the pitfalls section.
+            </p>
+
+            <div class="note">
+                <strong>Provider alias reminder:</strong>
+                The default AWS provider is configured for the management
+                account. The aliased <code>aws.security</code> provider assumes
+                a role in the dedicated security account.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 0 -->
+            <h2 id="trusted-access">Step 0: Enable Trusted Access for the Services</h2>
+
+            <p>
+                The organization resource must list the service principals,
+                otherwise the designation calls fail. This lives with the
+                organization definition, typically in the landing zone code:
+            </p>
+
+            <pre><code>resource "aws_organizations_organization" "this" {
+  feature_set = "ALL"
+
+  aws_service_access_principals = [
+    "guardduty.amazonaws.com",
+    "securityhub.amazonaws.com",
+    "access-analyzer.amazonaws.com",
+    "config.amazonaws.com",
+    "config-multiaccountsetup.amazonaws.com",
+    "sso.amazonaws.com",
+  ]
+
+  enabled_policy_types = ["SERVICE_CONTROL_POLICY"]
+}</code></pre>
+
+            <p>
+                Adding principals to an existing organization is safe, and it
+                is the one change in this post that touches the organization
+                resource itself.
+            </p>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 1 -->
+            <h2 id="providers">Step 1: Two Providers, One Apply</h2>
+
+            <p>
+                The root module talks to the management account by default and
+                to the security account through an aliased provider that assumes
+                the role AWS creates in every member account:
+            </p>
+
+            <pre><code># org/providers.tf
+
+terraform {
+  required_version = ">= 1.7"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.81"
+    }
+  }
+}
+
+variable "region" {
+  type    = string
+  default = "ap-south-1"
+}
+
+variable "security_account_id" {
+  type = string
+}
+
+provider "aws" {
+  region = var.region
+}
+
+provider "aws" {
+  alias  = "security"
+  region = var.region
+
+  assume_role {
+    role_arn     = "arn:aws:iam::${var.security_account_id}:role/OrganizationAccountAccessRole"
+    session_name = "terraform-security-baseline"
+  }
+}
+
+data "aws_organizations_organization" "this" {}</code></pre>
+
+            <p>
+                Everything created with <code>provider = aws.security</code>
+                lands in the security account. Everything else lands in the
+                management account.
+            </p>
+
+            <div class="note">
+                <strong>Keep the account boundary clear.</strong>
+                Before applying, confirm which provider each resource uses.
+                A missing provider alias can cause a resource to be created
+                in the management account instead of the security account.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 2 -->
+            <h2 id="delegated-admins">Step 2: Designate the Delegated Administrators</h2>
+
+            <p>
+                This is the only part that must run from the management account.
+                One resource per service:
+            </p>
+
+            <pre><code># org/delegated_admins.tf
+
+# GuardDuty needs a detector in the management account before the designation
+resource "aws_guardduty_detector" "management" {
+  enable = true
+}
+
+resource "aws_guardduty_organization_admin_account" "this" {
+  admin_account_id = var.security_account_id
+  depends_on       = [aws_guardduty_detector.management]
+}
+
+# Security Hub must be enabled in the management account first
+resource "aws_securityhub_account" "management" {}
+
+resource "aws_securityhub_organization_admin_account" "this" {
+  admin_account_id = var.security_account_id
+  depends_on       = [aws_securityhub_account.management]
+}
+
+# Services without a dedicated resource use the generic delegation resource
+resource "aws_organizations_delegated_administrator" "access_analyzer" {
+  account_id        = var.security_account_id
+  service_principal = "access-analyzer.amazonaws.com"
+}
+
+resource "aws_organizations_delegated_administrator" "config" {
+  account_id        = var.security_account_id
+  service_principal = "config.amazonaws.com"
+}
+
+resource "aws_organizations_delegated_administrator" "config_multiaccount" {
+  account_id        = var.security_account_id
+  service_principal = "config-multiaccountsetup.amazonaws.com"
+}</code></pre>
+
+            <p>
+                Designations can be confirmed from the CLI:
+            </p>
+
+            <pre><code>aws organizations list-delegated-administrators
+aws guardduty list-organization-admin-accounts
+aws securityhub list-organization-admin-accounts</code></pre>
+
+            <p>
+                The resources are quick to create and disruptive to remove,
+                so adding <code>lifecycle { prevent_destroy = true }</code>
+                to each is a cheap safeguard.
+            </p>
+
+            <div class="warning">
+                <strong>Protect delegated administrator resources.</strong>
+                Removing a designation can interrupt centralized security
+                management and automatic enrollment. Treat these resources
+                as long-lived organization infrastructure.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 3 -->
+            <h2 id="guardduty">Step 3: GuardDuty Across the Organization</h2>
+
+            <p>
+                GuardDuty is the first detective control to enable because it
+                needs no agents and starts producing signal immediately:
+                unusual API calls, credential exfiltration patterns,
+                crypto-mining behavior, suspicious DNS and network activity.
+            </p>
+
+            <pre><code># security-account/guardduty.tf
+
+resource "aws_guardduty_detector" "security" {
+  provider                     = aws.security
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+resource "aws_guardduty_organization_configuration" "this" {
+  provider                         = aws.security
+  detector_id                      = aws_guardduty_detector.security.id
+  auto_enable_organization_members = "ALL"
+
+  depends_on = [aws_guardduty_organization_admin_account.this]
+}
+
+locals {
+  guardduty_features = [
+    "S3_DATA_EVENTS",
+    "EBS_MALWARE_PROTECTION",
+    "RDS_LOGIN_EVENTS",
+    "LAMBDA_NETWORK_LOGS",
+  ]
+}
+
+resource "aws_guardduty_organization_configuration_feature" "this" {
+  for_each = toset(local.guardduty_features)
+  provider = aws.security
+
+  detector_id = aws_guardduty_detector.security.id
+  name        = each.value
+  auto_enable = "ALL"
+
+  depends_on = [aws_guardduty_organization_configuration.this]
+}</code></pre>
+
+            <p>Two settings deserve attention:</p>
+
+            <ul>
+                <li>
+                    <strong><code>auto_enable_organization_members = "ALL"</code></strong>
+                    enrolls both existing members and every account created
+                    later. The alternative, <code>NEW</code>, leaves existing
+                    accounts unprotected until someone enrolls them by hand.
+                    <code>NONE</code> turns off automatic enrollment entirely.
+                </li>
+                <li>
+                    <strong>Protection features are opt-in and billed separately.</strong>
+                    Each entry in <code>guardduty_features</code> adds detection
+                    coverage and adds cost. Start with the set that matches
+                    the workloads actually running, then expand. Container-heavy
+                    organizations will want <code>EKS_AUDIT_LOGS</code> and
+                    the runtime monitoring feature as well.
+                </li>
+            </ul>
+
+            <div class="note">
+                <strong>Start with the workloads you actually run.</strong>
+                Enabling every protection feature without reviewing its
+                relevance and pricing can increase costs unnecessarily.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 4 -->
+            <h2 id="security-hub">Step 4: Security Hub as the Single Pane</h2>
+
+            <p>
+                Security Hub collects findings from GuardDuty, Access Analyzer,
+                Config and other integrations, normalizes them into one format,
+                and adds its own continuous control checks against security
+                standards.
+            </p>
+
+            <pre><code># security-account/securityhub.tf
+
+resource "aws_securityhub_account" "security" {
+  provider                 = aws.security
+  enable_default_standards = false
+  auto_enable_controls     = true
+}
+
+# Collect findings from every region into the home region
+resource "aws_securityhub_finding_aggregator" "this" {
+  provider     = aws.security
+  linking_mode = "ALL_REGIONS"
+
+  depends_on = [aws_securityhub_account.security]
+}
+
+resource "aws_securityhub_organization_configuration" "this" {
+  provider              = aws.security
+  auto_enable           = true
+  auto_enable_standards = "DEFAULT"
+
+  depends_on = [
+    aws_securityhub_organization_admin_account.this,
+    aws_securityhub_finding_aggregator.this,
+  ]
+}
+
+resource "aws_securityhub_standards_subscription" "fsbp" {
+  provider      = aws.security
+  standards_arn = "arn:aws:securityhub:${var.region}::standards/aws-foundational-security-best-practices/v/1.0.0"
+
+  depends_on = [aws_securityhub_account.security]
+}</code></pre>
+
+            <p>
+                The AWS Foundational Security Best Practices standard is the
+                most useful starting point. It is broad, maintained by AWS,
+                and its controls map to real misconfigurations rather than
+                audit paperwork. The CIS benchmark and PCI DSS standards can
+                be added the same way when a compliance requirement calls
+                for them.
+            </p>
+
+            <p>Two cautions for teams adopting this at scale:</p>
+
+            <ul>
+                <li>
+                    <strong>Local configuration, as above, only auto-enrolls
+                    new accounts.</strong> Accounts that existed before the
+                    organization configuration was applied need to be
+                    associated as members. Security Hub also offers
+                    <em>central configuration</em> with configuration policies,
+                    which manages standards and controls per OU from the
+                    delegated administrator and is the better long-term model.
+                    In the provider it is selected through the
+                    <code>configuration_type</code> setting on the organization
+                    configuration, together with the
+                    <code>aws_securityhub_configuration_policy</code> resource.
+                    Switching later is possible, though it changes how
+                    <code>auto_enable</code> behaves, so reading the provider
+                    documentation first is worthwhile.
+                </li>
+                <li>
+                    <strong>Product naming is shifting.</strong> AWS has been
+                    repositioning Security Hub, and the posture-management
+                    capability now appears under the name Security Hub CSPM
+                    in places. The <code>aws_securityhub_*</code> resources
+                    continue to manage it, but the release notes are worth
+                    checking when upgrading the provider.
+                </li>
+            </ul>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 5 -->
+            <h2 id="access-analyzer">Step 5: IAM Access Analyzer for the Whole Organization</h2>
+
+            <p>
+                Access Analyzer answers a question nothing else here does:
+                which resources can principals <em>outside</em> the
+                organization reach? That covers S3 buckets with permissive
+                policies, KMS keys shared externally, IAM roles with trust
+                policies that name foreign accounts, and similar cases.
+            </p>
+
+            <pre><code># security-account/access_analyzer.tf
+
+resource "aws_accessanalyzer_analyzer" "org_external_access" {
+  provider      = aws.security
+  analyzer_name = "org-external-access"
+  type          = "ORGANIZATION"
+
+  depends_on = [aws_organizations_delegated_administrator.access_analyzer]
+}</code></pre>
+
+            <p>
+                An analyzer of type <code>ORGANIZATION</code> treats the whole
+                organization as the zone of trust. Anything reachable from
+                outside it becomes a finding, and those findings appear in
+                Security Hub alongside everything else.
+            </p>
+
+            <div class="note">
+                <strong>Think of the organization as the trust boundary.</strong>
+                Access Analyzer helps identify resources that are shared
+                outside that boundary, so teams can review whether the
+                access is intentional.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 6 -->
+            <h2 id="config">Step 6: AWS Config Aggregation and Organization Rules</h2>
+
+            <p>
+                Config records resource configuration over time and evaluates
+                it against rules. The aggregator brings that data from every
+                account and region into the security account.
+            </p>
+
+            <pre><code># security-account/config.tf
+
+data "aws_iam_policy_document" "config_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["config.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "config_aggregator" {
+  provider           = aws.security
+  name               = "config-org-aggregator"
+  assume_role_policy = data.aws_iam_policy_document.config_assume.json
+}
+
+resource "aws_iam_role_policy_attachment" "config_aggregator" {
+  provider   = aws.security
+  role       = aws_iam_role.config_aggregator.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRoleForOrganizations"
+}
+
+resource "aws_config_configuration_aggregator" "org" {
+  provider = aws.security
+  name     = "org-aggregator"
+
+  organization_aggregation_source {
+    all_regions = true
+    role_arn    = aws_iam_role.config_aggregator.arn
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.config_aggregator,
+    aws_organizations_delegated_administrator.config,
+  ]
+}
+
+locals {
+  org_config_rules = {
+    "s3-bucket-public-read-prohibited"  = "S3_BUCKET_PUBLIC_READ_PROHIBITED"
+    "s3-bucket-public-write-prohibited" = "S3_BUCKET_PUBLIC_WRITE_PROHIBITED"
+    "root-account-mfa-enabled"          = "ROOT_ACCOUNT_MFA_ENABLED"
+    "iam-root-access-key-check"         = "IAM_ROOT_ACCESS_KEY_CHECK"
+    "encrypted-volumes"                 = "ENCRYPTED_VOLUMES"
+    "cloudtrail-enabled"                = "CLOUD_TRAIL_ENABLED"
+  }
+}
+
+resource "aws_config_organization_managed_rule" "this" {
+  for_each = local.org_config_rules
+  provider = aws.security
+
+  name            = each.key
+  rule_identifier = each.value
+
+  depends_on = [aws_organizations_delegated_administrator.config_multiaccount]
+}</code></pre>
+
+            <p>
+                Organization rules are deployed into every member account,
+                but a rule can only evaluate resources in an account where
+                the <strong>Config recorder is running</strong>. That is why
+                the account baseline module below turns the recorder on.
+            </p>
+
+            <div class="warning">
+                <strong>Do not forget the Config recorder.</strong>
+                Creating organization rules does not by itself guarantee
+                that resources are being recorded. The recorder and delivery
+                channel must also be configured in each account.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 7 -->
+            <h2 id="scps">Step 7: Preventive Guardrails with SCPs</h2>
+
+            <p>
+                Detection tells the security team that something happened.
+                SCPs make some things impossible. Three policies cover the
+                most important cases: root user usage, tampering with the
+                security tooling, and leaving the approved regions (the
+                region policy from the landing zone post can be reused here).
+            </p>
+
+            <pre><code># org/scps.tf
+
+resource "aws_organizations_policy" "deny_root_user" {
+  name = "deny-root-user-actions"
+  type = "SERVICE_CONTROL_POLICY"
+
+  content = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid      = "DenyRootUser"
+      Effect   = "Deny"
+      Action   = "*"
+      Resource = "*"
+      Condition = {
+        StringLike = {
+          "aws:PrincipalArn" = ["arn:aws:iam::*:root"]
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_organizations_policy" "protect_security_tooling" {
+  name = "protect-security-tooling"
+  type = "SERVICE_CONTROL_POLICY"
+
+  content = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid    = "DenyDisablingSecurityServices"
+      Effect = "Deny"
+      Action = [
+        "guardduty:DeleteDetector",
+        "guardduty:DisassociateFromAdministratorAccount",
+        "guardduty:DisassociateFromMasterAccount",
+        "securityhub:DisableSecurityHub",
+        "securityhub:DisassociateFromAdministratorAccount",
+        "securityhub:DisassociateFromMasterAccount",
+        "securityhub:BatchDisableStandards",
+        "config:DeleteConfigurationRecorder",
+        "config:StopConfigurationRecorder",
+        "config:DeleteDeliveryChannel",
+        "access-analyzer:DeleteAnalyzer",
+      ]
+      Resource = "*"
+    }]
+  })
+}
+
+variable "workload_ou_ids" {
+  description = "OU IDs that receive the guardrails. Test on a sandbox OU first."
+  type        = map(string)
+}
+
+locals {
+  baseline_scps = {
+    deny_root_user            = aws_organizations_policy.deny_root_user.id
+    protect_security_tooling  = aws_organizations_policy.protect_security_tooling.id
+  }
+
+  scp_attachments = {
+    for pair in setproduct(keys(var.workload_ou_ids), keys(local.baseline_scps)) :
+    "${pair[0]}-${pair[1]}" => {
+      ou     = var.workload_ou_ids[pair[0]]
+      policy = local.baseline_scps[pair[1]]
+    }
+  }
+}
+
+resource "aws_organizations_policy_attachment" "baseline" {
+  for_each  = local.scp_attachments
+  policy_id = each.value.policy
+  target_id = each.value.ou
+}</code></pre>
+
+            <p>Some properties of SCPs matter in practice:</p>
+
+            <ul>
+                <li>
+                    <strong>They never apply to the management account,</strong>
+                    which is one more reason to keep it nearly empty.
+                </li>
+                <li>
+                    <strong>They do not affect service-linked roles.</strong>
+                    GuardDuty and Config continue operating through their own
+                    roles even when a principal in the account is denied.
+                </li>
+                <li>
+                    <strong>They do not grant anything.</strong> An SCP only
+                    sets a ceiling. IAM policies in the account still have
+                    to allow the action.
+                </li>
+                <li>
+                    <strong>A bad SCP can lock people out.</strong> The first
+                    attachment should go to a sandbox OU, with a deliberate
+                    attempt to trigger each denial before the policy moves
+                    to production OUs.
+                </li>
+            </ul>
+
+            <p>
+                The root-user policy pairs well with AWS's centralized root
+                access management for member accounts, which removes the need
+                for root credentials in member accounts altogether. That
+                feature is worth enabling once the SCP is in place.
+            </p>
+
+            <div class="warning">
+                <strong>Test SCPs before applying them broadly.</strong>
+                Attach policies to a sandbox OU first. Verify that expected
+                actions are denied and that essential operational workflows
+                continue to work before moving the policies to production.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 8 -->
+            <h2 id="account-baseline">Step 8: The Per-Account Hardening Module</h2>
+
+            <p>
+                Some controls are properties of a single account and region
+                rather than of the organization. A small module, applied to
+                every account by the same pipeline that creates it, closes
+                those gaps and turns on the Config recorder that the
+                organization rules depend on:
+            </p>
+
+            <pre><code># modules/account-baseline/main.tf
+
+variable "config_bucket" {
+  description = "Central S3 bucket in the log archive account for Config snapshots"
+  type        = string
+}
+
+# Block public S3 access for every bucket in the account, present and future
+resource "aws_s3_account_public_access_block" "this" {
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# New EBS volumes are encrypted by default (this setting is per region)
+resource "aws_ebs_encryption_by_default" "this" {
+  enabled = true
+}
+
+# Config recorder, so organization rules can actually evaluate resources
+resource "aws_iam_service_linked_role" "config" {
+  aws_service_name = "config.amazonaws.com"
+}
+
+resource "aws_config_configuration_recorder" "this" {
+  name     = "default"
+  role_arn = aws_iam_service_linked_role.config.arn
+
+  recording_group {
+    all_supported                 = true
+    include_global_resource_types = false
+  }
+}
+
+resource "aws_config_delivery_channel" "this" {
+  name           = "default"
+  s3_bucket_name = var.config_bucket
+
+  depends_on = [aws_config_configuration_recorder.this]
+}
+
+resource "aws_config_configuration_recorder_status" "this" {
+  name       = aws_config_configuration_recorder.this.name
+  is_enabled = true
+
+  depends_on = [aws_config_delivery_channel.this]
+}</code></pre>
+
+            <p>
+                <code>include_global_resource_types = false</code> avoids
+                recording IAM and other global resources redundantly in
+                every region. One region, usually the home region, should
+                record them.
+            </p>
+
+            <div class="note">
+                <strong>Apply this module consistently.</strong>
+                The account baseline should be part of the account
+                provisioning workflow, so newly created accounts receive
+                the same hardening controls without a separate manual step.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Step 9 -->
+            <h2 id="identity-center">Step 9: Human Access Through IAM Identity Center</h2>
+
+            <p>
+                The detective tools are only useful if the security team can
+                reach them without long-lived credentials. Identity Center
+                permission sets give a group the same role in every account,
+                with short sessions, and assignments are plain Terraform:
+            </p>
+
+            <pre><code># org/identity_center.tf
+
+data "aws_ssoadmin_instances" "this" {}
+
+locals {
+  sso_instance_arn  = tolist(data.aws_ssoadmin_instances.this.arns)[0]
+  identity_store_id = tolist(data.aws_ssoadmin_instances.this.identity_store_ids)[0]
+}
+
+variable "all_account_ids" {
+  description = "Account IDs that the security team can audit"
+  type        = map(string) # name => account ID
+}
+
+resource "aws_ssoadmin_permission_set" "security_audit" {
+  name             = "SecurityAudit"
+  description      = "Read-only security review access"
+  instance_arn     = local.sso_instance_arn
+  session_duration = "PT4H"
+}
+
+resource "aws_ssoadmin_managed_policy_attachment" "security_audit" {
+  instance_arn       = local.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.security_audit.arn
+  managed_policy_arn = "arn:aws:iam::aws:policy/SecurityAudit"
+}
+
+data "aws_identitystore_group" "security_team" {
+  identity_store_id = local.identity_store_id
+
+  alternate_identifier {
+    unique_attribute {
+      attribute_path  = "DisplayName"
+      attribute_value = "security-team"
+    }
+  }
+}
+
+resource "aws_ssoadmin_account_assignment" "security_audit" {
+  for_each = var.all_account_ids
+
+  instance_arn       = local.sso_instance_arn
+  permission_set_arn = aws_ssoadmin_permission_set.security_audit.arn
+
+  principal_id   = data.aws_identitystore_group.security_team.group_id
+  principal_type = "GROUP"
+
+  target_id   = each.value
+  target_type = "AWS_ACCOUNT"
+}</code></pre>
+
+            <p>
+                Assignments go to groups rather than individual users, so
+                onboarding and offboarding happen in the identity provider
+                and nothing in Terraform changes. The <code>for_each</code>
+                uses a map of account names rather than a list of IDs created
+                in the same apply, which keeps the keys known at plan time.
+            </p>
+
+            <div class="note">
+                <strong>Use groups instead of individual assignments.</strong>
+                This makes access easier to manage as team members join,
+                leave, or change responsibilities.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Verification -->
+            <h2 id="verification">Verifying the Baseline</h2>
+
+            <p>
+                A baseline that has never been tested is a hypothesis.
+                Four checks cover the main claims:
+            </p>
+
+            <ol>
+                <li>
+                    <strong>Enrollment.</strong> In the security account,
+                    <code>aws guardduty list-members --detector-id &lt;id&gt;</code>
+                    should list every member account with a status of
+                    <code>Enabled</code>. In Security Hub, the accounts page
+                    should show the same set.
+                </li>
+                <li>
+                    <strong>Findings flow.</strong> In a member account,
+                    generate sample findings with
+                    <code>aws guardduty create-sample-findings --detector-id &lt;member-detector-id&gt; --finding-types Recon:EC2/PortProbeUnprotectedPort</code>.
+                    Within a few minutes the finding should appear in the
+                    security account's Security Hub, labeled with the
+                    member's account ID.
+                </li>
+                <li>
+                    <strong>Guardrails hold.</strong> In a sandbox account
+                    under the SCP-attached OU, try
+                    <code>aws guardduty delete-detector</code>. The expected
+                    result is <code>AccessDenied</code> with an explicit
+                    deny from a service control policy.
+                </li>
+                <li>
+                    <strong>New accounts enroll themselves.</strong> Create
+                    a throwaway account through the landing zone pipeline,
+                    then confirm GuardDuty and Security Hub appear enabled
+                    in it without any manual step. This is the check that
+                    actually proves "baseline" rather than "configuration
+                    of existing accounts".
+                </li>
+            </ol>
+
+            <div class="note">
+                <strong>The new-account test is especially important.</strong>
+                Existing accounts may already have been configured manually.
+                Creating a new account and confirming automatic enrollment
+                proves that the organization-level baseline is working.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Cost -->
+            <h2 id="cost">Cost: Where the Bill Grows</h2>
+
+            <p>
+                All four detective services price by usage, which means the
+                cost of a baseline scales with how busy the accounts are:
+            </p>
+
+            <ul>
+                <li>
+                    <strong>GuardDuty</strong> bills on the volume of analyzed
+                    events, and each protection feature adds its own meter.
+                    S3 data events and runtime monitoring are the usual drivers.
+                </li>
+                <li>
+                    <strong>Security Hub</strong> bills on security checks and
+                    ingested findings. Turning on several standards multiplies
+                    the checks.
+                </li>
+                <li>
+                    <strong>Config</strong> bills per configuration item recorded,
+                    so accounts with heavy resource churn (autoscaling groups,
+                    ephemeral CI environments) cost more than quiet ones.
+                </li>
+                <li>
+                    <strong>Access Analyzer</strong> external access findings
+                    carry no charge, while unused access analysis does.
+                </li>
+            </ul>
+
+            <p>
+                Sandbox and short-lived accounts are the obvious place to
+                review. Recording every resource type in a throwaway account
+                that lives for a day rarely earns its cost.
+            </p>
+
+            <div class="warning">
+                <strong>Review costs as coverage expands.</strong>
+                More accounts, more regions, additional GuardDuty protection
+                features and more Config recording can all increase the bill.
+                Review usage and pricing before enabling new coverage
+                organization-wide.
+            </div>
+
+            <div class="divider"></div>
+
+
+            <!-- Pitfalls -->
+            <h2 id="pitfalls">Common Pitfalls</h2>
+
+            <ul>
+                <li>
+                    <strong>Eventual consistency on the first apply.</strong>
+                    Delegated administrator designation takes a short time
+                    to propagate. The first <code>terraform apply</code> can
+                    fail on the security-account resources with an error
+                    saying the account is not yet an administrator.
+                    Re-running a minute later succeeds. The
+                    <code>depends_on</code> lines reduce this but cannot
+                    remove it.
+                </li>
+                <li>
+                    <strong>Everything is regional.</strong> GuardDuty,
+                    Security Hub, Config and EBS default encryption are
+                    enabled per region. The code above covers one region.
+                    Covering several means repeating the blocks with a
+                    provider alias per region, or using the per-resource
+                    <code>region</code> argument introduced in version 6
+                    of the AWS provider, which removes much of the alias
+                    boilerplate. Resources that support it should be
+                    verified against the provider documentation before
+                    relying on it.
+                </li>
+                <li>
+                    <strong>Unused regions still matter.</strong> Attackers
+                    favor regions nobody watches. Either enable detection
+                    in every region, or deny use of unapproved regions with
+                    an SCP and enable detection in the approved ones.
+                </li>
+                <li>
+                    <strong>Two accounts in one state.</strong> Managing
+                    management and security resources from one state file
+                    is convenient, but a mistake while changing
+                    security-account resources runs with management-account
+                    reach. Teams with stricter separation split the stack
+                    and pass <code>security_account_id</code> as input.
+                </li>
+                <li>
+                    <strong>Destroying a designation.</strong> Removing a
+                    delegated administrator resource stops auto-enrollment
+                    and can disconnect members from the central view. Treat
+                    these resources as long-lived.
+                </li>
+                <li>
+                    <strong>Finding noise.</strong> Out of the box, Security
+                    Hub reports a large number of low-severity control
+                    failures. Suppression rules
+                    (<code>aws_guardduty_filter</code> for GuardDuty,
+                    automation rules for Security Hub) and an ownership
+                    model matter more than adding yet another standard.
+                    A dashboard nobody reads is the same as no dashboard.
+                </li>
+                <li>
+                    <strong>Pre-existing resources.</strong> Accounts that
+                    already have their own GuardDuty detector or Config
+                    recorder will conflict with the module. Import them or
+                    adopt them before applying.
+                </li>
+            </ul>
+
+            <div class="divider"></div>
+
+
+            <!-- Next Steps -->
+            <h2 id="next">Where This Goes Next</h2>
+
+            <ul>
+                <li>
+                    <strong>Route findings to people.</strong> An EventBridge
+                    rule on high-severity Security Hub findings, sent to SNS
+                    and then to Slack or a ticketing system, converts the
+                    baseline from a dashboard into an alerting system.
+                </li>
+                <li>
+                    <strong>Central configuration in Security Hub.</strong>
+                    Configuration policies per OU allow different standards
+                    for production and sandbox accounts without
+                    hand-managing each account.
+                </li>
+                <li>
+                    <strong>More services with the same pattern.</strong>
+                    Amazon Inspector, Macie and Detective all use the
+                    delegated administrator model. Each is a short
+                    designation resource plus an organization configuration
+                    block, shaped like the GuardDuty step.
+                </li>
+                <li>
+                    <strong>Automated remediation.</strong> Config remediation
+                    actions and Systems Manager Automation runbooks can fix
+                    a class of findings, such as re-blocking a public bucket,
+                    without waiting for a person.
+                </li>
+                <li>
+                    <strong>Compare with Control Tower.</strong> AWS Control
+                    Tower packages parts of this baseline as managed
+                    controls. Building it by hand first makes it clear
+                    which guardrails Control Tower provides and where
+                    custom Terraform still has a role.
+                </li>
+            </ul>
+
+            <p>
+                The underlying idea carries across all of them: security
+                coverage should be defined once at the organization level,
+                applied automatically to every account, and tested by
+                creating a new account and checking that nothing has to
+                be done by hand.
+            </p>
+
+            <div class="divider"></div>
+
+
+            <!-- Conclusion -->
+            <h2 id="conclusion">Final Takeaway</h2>
+
+            <p>
+                An organization-wide security baseline is not just about
+                enabling individual AWS security services. It is about
+                making security coverage consistent, repeatable and
+                automatic across every account.
+            </p>
+
+            <p>
+                By using a dedicated security account, delegated
+                administrators, organization-wide detection, preventive
+                SCPs, account-level hardening and IAM Identity Center,
+                teams can build a foundation that scales as the AWS
+                organization grows.
+            </p>
+
+            <blockquote>
+                <p>
+                    The goal is simple: every account should start with
+                    the same security baseline, and no account should
+                    depend on someone remembering to enable it manually.
+                </p>
+            </blockquote>
+
+
+            <!-- Suggested Screenshots -->
+            <h2>Suggested Screenshots</h2>
+
+            <p>
+                The following screenshots can make the implementation
+                easier to understand and demonstrate that the baseline
+                is working:
+            </p>
+
+            <ul>
+                <li>
+                    The Security Hub members page in the security account,
+                    showing every member account enrolled.
+                </li>
+                <li>
+                    The GuardDuty "Accounts" page showing
+                    <code>Enabled</code> for all members and the
+                    auto-enable setting set to all accounts.
+                </li>
+                <li>
+                    The AccessDenied error from attempting
+                    <code>guardduty:DeleteDetector</code> in a sandbox
+                    account, showing the explicit SCP deny.
+                </li>
+                <li>
+                    A sample finding generated in a member account
+                    appearing in the security account's Security Hub,
+                    to show findings flowing up.
+                </li>
+                <li>
+                    The IAM Identity Center permission sets page with
+                    the <code>SecurityAudit</code> set and its account
+                    assignments.
+                </li>
+            </ul>
+
+
+            <div class="divider"></div>
+
+            <a href="../../blog.html" class="back-button">
+                ← Back to All Blogs
+            </a>
+
+        </article>
+    </main>
+
+</body>
+</html>
